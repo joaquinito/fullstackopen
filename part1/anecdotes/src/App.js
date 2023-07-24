@@ -1,10 +1,26 @@
 import { useState } from 'react'
 
 
+const Header = (props) => {
+  return (
+    <h1>{props.text}</h1>
+  )
+}
+
 const Button = (props) => {
    return (
       <button onClick={props.action}>{props.text}</button>
    )
+}
+
+const Anecdote = (props) => {
+  return (
+    <div>{props.text}
+    <br/>
+    has {props.votes} votes
+    <br/>
+    </div>
+  )
 }
 
 const App = () => {
@@ -43,17 +59,21 @@ const App = () => {
           }
         })
         setVotes(newVotes)
-        console.log(newVotes)
+        console.log("Updated votes: ", newVotes)
     }
+
+    const maxVotes = Math.max(...votes)
+    const maxVotesIndex = votes.indexOf(maxVotes)
+    console.log("Anecdote with most votes: ", maxVotesIndex)
 
     return (
         <div>
-          {anecdotes[selected]}
-          <br/>
-          has {votes[selected]} votes
-          <br/>
+          <Header text="Anecdote of the day"/>
+          <Anecdote text={anecdotes[selected]} votes={votes[selected]}/>
           <Button text="vote" action={voteForAnecdote}/>
           <Button text="next anecdote" action={nextAnecdote}/>
+          <Header text="Anecdote with most votes"/>
+          <Anecdote text={anecdotes[maxVotesIndex]} votes={votes[maxVotesIndex]}/>
         </div>
     )
 }
