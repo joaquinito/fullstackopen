@@ -16,12 +16,12 @@ const StatisticsLine = (props) => {
     // Positive percentage stat requires a '%' at the end
     if (props.text === "positive") {
         return (
-            <div>{props.text} {props.value} %</div>
+            <tr><td>{props.text}</td><td>{props.value} %</td></tr>
         )
     }
     else {
         return (
-            <div>{props.text} {props.value}</div>
+            <tr><td>{props.text}</td><td>{props.value}</td></tr>
         )
     }
 }
@@ -33,14 +33,14 @@ const Statistics = (props) => {
     }
     else {
         return (
-            <div>
+            <table>
                 <StatisticsLine text="good" value={props.good}/>
                 <StatisticsLine text="neutral" value={props.neutral}/>
                 <StatisticsLine text="bad" value={props.bad}/>
                 <StatisticsLine text="all" value={props.total}/>
                 <StatisticsLine text="average" value={props.average}/>
                 <StatisticsLine text="positive" value={props.positivePercentage}/>
-            </div>
+            </table>
         )
     }
 }
