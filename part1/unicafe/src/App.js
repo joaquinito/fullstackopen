@@ -7,51 +7,86 @@ const Header = (props) => {
 }
 
 const FeedbackStat = (props) => {
-    return (
-        <div>{props.name} {props.count}</div>
-    )
+    if (props.name === "positive") {
+        return (
+            <div>{props.name} {props.stat} %</div>
+        )
+    }
+    else {
+        return (
+            <div>{props.name} {props.stat}</div>
+        )
+    }
 }
-
 
 const App = () => {
   
-  const [good, setGood] = useState(0)
-  const [neutral, setNeutral] = useState(0)
-  const [bad, setBad] = useState(0)
+    const [good, setGood] = useState(0)
+    const [neutral, setNeutral] = useState(0)
+    const [bad, setBad] = useState(0)
+    const [total, setTotal] = useState(0)
+    const [average, setAverage] = useState(0)
+    const [positivePercentage, setPositivePercentage] = useState(0)
 
-  const handleGoodClick = () => {
-    console.log("User clicked 'good'")
-    let newGoodValue = good +1
-    setGood(newGoodValue)
-    console.log("'good' counter: ", newGoodValue)
-  }
+    const updatePositivePercentage = (goodCount, totalCount) => {
+        let newPositivePercentage = (goodCount / totalCount) * 100
+        console.log("Current positive percentage: ", newPositivePercentage, " %")
+        setPositivePercentage(newPositivePercentage)
+    }
 
-  const handleNeutralClick = () => {
-    console.log("User clicked 'neutral'")
-    let newNeutralValue = neutral +1
-    setNeutral(newNeutralValue)
-    console.log("'neutral' counter: ", newNeutralValue)
-  }
+    const updateAverage = (goodCount, badCount, totalCount) => {
+        let newAverage = (goodCount - badCount)/totalCount
+        console.log("Current average: ", newAverage)
+        setAverage(newAverage)
+    }
+  
+    const incrementTotal = (goodCount, badCount) => {
+        let newTotal = total + 1
+        setTotal(newTotal)
+        console.log("Total counter: ", newTotal)
+        updateAverage(goodCount, badCount, newTotal)
+        updatePositivePercentage(goodCount, newTotal)
+    }
 
-  const handleBadClick = () => {
-    console.log("User clicked 'bad'")
-    let newBadValue = bad +1
-    setBad(newBadValue)
-    console.log("'bad' counter: ", newBadValue)
-  }
+    const handleGoodClick = () => {
+        console.log("User clicked 'good'")
+        let newGoodValue = good +1
+        setGood(newGoodValue)
+        console.log("'good' counter: ", newGoodValue)
+        incrementTotal(newGoodValue, bad)
+    }
 
-  return (
-    <div>
-      <Header text="give feedback"/>
-      <button onClick={handleGoodClick}>good</button>
-      <button onClick={handleNeutralClick}>neutral</button>
-      <button onClick={handleBadClick}>bad</button>
-      <Header text="statistics"/>
-      <FeedbackStat name="good" count={good}></FeedbackStat>
-      <FeedbackStat name="neutral" count={neutral}></FeedbackStat>
-      <FeedbackStat name="bad" count={bad}></FeedbackStat>
-    </div>
-  )
+    const handleNeutralClick = () => {
+        console.log("User clicked 'neutral'")
+        let newNeutralValue = neutral +1
+        setNeutral(newNeutralValue)
+        console.log("'neutral' counter: ", newNeutralValue)
+        incrementTotal(good, bad)
+    }
+
+    const handleBadClick = () => {
+        console.log("User clicked 'bad'")
+        let newBadValue = bad +1
+        setBad(newBadValue)
+        console.log("'bad' counter: ", newBadValue)
+        incrementTotal(good, newBadValue)
+    }
+
+    return (
+        <div>
+        <Header text="give feedback"/>
+        <button onClick={handleGoodClick}>good</button>
+        <button onClick={handleNeutralClick}>neutral</button>
+        <button onClick={handleBadClick}>bad</button>
+        <Header text="statistics"/>
+        <FeedbackStat name="good" stat={good}></FeedbackStat>
+        <FeedbackStat name="neutral" stat={neutral}></FeedbackStat>
+        <FeedbackStat name="bad" stat={bad}></FeedbackStat>
+        <FeedbackStat name="all" stat={total}></FeedbackStat>
+        <FeedbackStat name="average" stat={average}></FeedbackStat>
+        <FeedbackStat name="positive" stat={positivePercentage}></FeedbackStat>
+        </div>
+    )
 }
 
 export default App
