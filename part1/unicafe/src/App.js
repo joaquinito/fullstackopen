@@ -6,36 +6,43 @@ const Header = (props) => {
     )
 }
 
-const FeedbackStat = (props) => {
-    if (props.name === "positive") {
+const Button = (props) => {
+    return (
+        <button onClick={props.handlerFunction}>{props.text}</button>
+    )
+}
+
+const StatisticsLine = (props) => {
+    // Positive percentage stat requires a '%' at the end
+    if (props.text === "positive") {
         return (
-            <div>{props.name} {props.stat} %</div>
+            <div>{props.text} {props.value} %</div>
         )
     }
     else {
         return (
-            <div>{props.name} {props.stat}</div>
+            <div>{props.text} {props.value}</div>
         )
     }
 }
 
 const Statistics = (props) => {
+    // Only show statistics if there has been at least one feedback
     if(props.total === 0) {
         return "No feedback given"
     }
     else {
         return (
             <div>
-            <FeedbackStat name="good" stat={props.good}></FeedbackStat>
-            <FeedbackStat name="neutral" stat={props.neutral}></FeedbackStat>
-            <FeedbackStat name="bad" stat={props.bad}></FeedbackStat>
-            <FeedbackStat name="all" stat={props.total}></FeedbackStat>
-            <FeedbackStat name="average" stat={props.average}></FeedbackStat>
-            <FeedbackStat name="positive" stat={props.positivePercentage}></FeedbackStat>
+                <StatisticsLine text="good" value={props.good}/>
+                <StatisticsLine text="neutral" value={props.neutral}/>
+                <StatisticsLine text="bad" value={props.bad}/>
+                <StatisticsLine text="all" value={props.total}/>
+                <StatisticsLine text="average" value={props.average}/>
+                <StatisticsLine text="positive" value={props.positivePercentage}/>
             </div>
         )
     }
-   
 }
 
 const App = () => {
@@ -94,9 +101,9 @@ const App = () => {
     return (
         <div>
         <Header text="give feedback"/>
-        <button onClick={handleGoodClick}>good</button>
-        <button onClick={handleNeutralClick}>neutral</button>
-        <button onClick={handleBadClick}>bad</button>
+        <Button text="good" handlerFunction={handleGoodClick}/>
+        <Button text="neutral" handlerFunction={handleNeutralClick}/>
+        <Button text="bad" handlerFunction={handleBadClick}/>
         <Header text="statistics"/>
         <Statistics good={good} neutral={neutral} bad={bad} total={total} 
                     average={average} positivePercentage={positivePercentage}/>
