@@ -20,16 +20,22 @@ const FeedbackStat = (props) => {
 }
 
 const Statistics = (props) => {
-    return (
-        <div>
-        <FeedbackStat name="good" stat={props.good}></FeedbackStat>
-        <FeedbackStat name="neutral" stat={props.neutral}></FeedbackStat>
-        <FeedbackStat name="bad" stat={props.bad}></FeedbackStat>
-        <FeedbackStat name="all" stat={props.total}></FeedbackStat>
-        <FeedbackStat name="average" stat={props.average}></FeedbackStat>
-        <FeedbackStat name="positive" stat={props.positivePercentage}></FeedbackStat>
-        </div>
-    )
+    if(props.total === 0) {
+        return "No feedback given"
+    }
+    else {
+        return (
+            <div>
+            <FeedbackStat name="good" stat={props.good}></FeedbackStat>
+            <FeedbackStat name="neutral" stat={props.neutral}></FeedbackStat>
+            <FeedbackStat name="bad" stat={props.bad}></FeedbackStat>
+            <FeedbackStat name="all" stat={props.total}></FeedbackStat>
+            <FeedbackStat name="average" stat={props.average}></FeedbackStat>
+            <FeedbackStat name="positive" stat={props.positivePercentage}></FeedbackStat>
+            </div>
+        )
+    }
+   
 }
 
 const App = () => {
