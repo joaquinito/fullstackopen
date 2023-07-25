@@ -22,10 +22,7 @@ const Content = ({parts}) => {
 }
 
 const Total = ({parts}) => {
-  let sum = 0
-  for (let x of parts){
-    sum += x.exercises
-  }
+  let sum = parts.reduce((s, p) =>  s + p.exercises, 0)
   return (
     <p><b>total of {sum} exercise{sum !== 1 && 's'}</b></p>
   )
