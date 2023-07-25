@@ -21,11 +21,22 @@ const Content = ({parts}) => {
   )
 }
 
+const Total = ({parts}) => {
+  let sum = 0
+  for (let x of parts){
+    sum += x.exercises
+  }
+  return (
+    <p><b>total of {sum} exercise{sum !== 1 && 's'}</b></p>
+  )
+}
+
 const Course = ({course}) => {
   return (
     <div>
       <Header courseName={course.name}/>
       <Content parts = {course.parts}/>
+      <Total parts = {course.parts}/>
     </div>
   )
 }
