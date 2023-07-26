@@ -41,7 +41,31 @@ const App = () => {
         }
         else {
             personsDatabase.create({name: newName, number: newNumber})
-                            .then(response => {setPersons(persons.concat(response.data))})                       
+                           .then(response => {setPersons(persons.concat(response.data))})                       
+        }
+    }
+
+    // Update both state variables 'persons' and 'filteredPersons'
+    const updateAllPersonsStateVariables= (dbPersons) => {
+        setPersons(dbPersons)
+        let filteredArray = dbPersons.filter(
+            person => person.name.toLowerCase().includes(
+                      filterText.toLowerCase()))
+        setNewFilteredPersons(filteredArray)
+    }
+
+    /* When deleting a person, make the user confirm this action first. 
+       If confirmed, remove the person with this ID in the db, wait for action conclusion. 
+       Then get the whole db content again, wait for action conclusion. 
+       Then update our state variable persons with the db content, which will trigger the page
+       re-render.
+    */
+    const deletePerson = (id) => {
+        const targetPerson = persons.find(person => person.id === id)
+        if(window.confirm(`Delete ${targetPerson.name}?`)){
+            personsDatabase.remove(id).then(
+                response => {personsDatabase.getAll().then(
+                    response => updateAllPersonsStateVariables(response.data))}) 
         }
     }
 
@@ -57,7 +81,8 @@ const App = () => {
                         numberInput={newNumber} numberHandlerFunction={handleNumberChange}
                         submitEventHandler={addPerson}/>
             <h2>Numbers</h2>
-            <Persons personList={filterText? filteredPersons: persons}/>
+            <Persons personList={filterText? filteredPersons : persons} 
+                     deletePerson={deletePerson}/>
         </div>
     )
 }
