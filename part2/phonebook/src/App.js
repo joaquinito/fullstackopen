@@ -36,12 +36,19 @@ const App = () => {
 
     const addPerson = (event) => {
         event.preventDefault()
-        if (persons.find(person => person.name === newName)){
-            alert(`${newName} is already added to phonebook`)
+        const targetPerson = persons.find(person => person.name === newName)
+        if (targetPerson){
+            if(window.confirm(`${newName} is already added to phonebook, replace the old number with
+                            a new one?`)){
+                personsDatabase.replace(targetPerson.id, {...targetPerson, number: newNumber}).then(
+                    response => {personsDatabase.getAll().then(
+                        response => updateAllPersonsStateVariables(response.data))}) 
+            }
         }
         else {
-            personsDatabase.create({name: newName, number: newNumber})
-                           .then(response => {setPersons(persons.concat(response.data))})                       
+            personsDatabase.create({name: newName, number: newNumber}).then(
+                response => {personsDatabase.getAll().then(
+                    response => updateAllPersonsStateVariables(response.data))})                    
         }
     }
 
