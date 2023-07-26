@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import personsDatabase from './services/personsDatabase'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
@@ -40,22 +40,13 @@ const App = () => {
             alert(`${newName} is already added to phonebook`)
         }
         else {
-            setPersons(persons.concat({name: newName, number: newNumber, 
-                                    id: persons.length+1}))                          
+            personsDatabase.create({name: newName, number: newNumber})
+                            .then(response => {setPersons(persons.concat(response.data))})                       
         }
     }
 
-    const getPersonsFromServer = () => {
-      console.log('effect')
-      axios
-        .get('http://localhost:3001/persons')
-        .then(response => {
-          console.log('promise fulfilled')
-          setPersons(response.data)
-        })
-    }
-    
-    useEffect(getPersonsFromServer, [])
+    useEffect(() => {personsDatabase.getAll()
+                                    .then(response => {setPersons(response.data)})}, [])
 
     return (
         <div>
