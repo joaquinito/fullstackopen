@@ -39,12 +39,18 @@ const App = () => {
     const addPerson = (event) => {
         event.preventDefault()
         const targetPerson = persons.find(person => person.name === newName)
+
         if (targetPerson){
             if(window.confirm(`${newName} is already added to phonebook, 
                                replace the old number with a new one?`)){
                 personsDatabase.replace(targetPerson.id, {...targetPerson, number: newNumber})
-                    .then(() => {personsDatabase.getAll()
-                    .then(response => updateAllPersonsStateVariables(response.data))}) 
+                    .then(() => personsDatabase.getAll())
+                    .then(response => updateAllPersonsStateVariables(response.data))
+                    .then(() => {setNotificationMessage({type: 'info', 
+                                                         text: `${newName}'s number changed`})
+                                 setTimeout(() => setNotificationMessage({type: '', text: ''}), 
+                                            5000)
+                                })
             }
         }
         else {
@@ -57,8 +63,8 @@ const App = () => {
         }
     }
 
-    // Update both state variables 'persons' and 'filteredPersons'
-    const updateAllPersonsStateVariables= (dbPersons) => {
+    const updateAllPersonsStateVariables = (dbPersons) => {
+        // Update both state variables 'persons' and 'filteredPersons'
         setPersons(dbPersons)
         let filteredArray = dbPersons.filter(
             person => person.name.toLowerCase().includes(
