@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import personsDatabase from './services/personsDatabase'
+import Notification from './components/Notification'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
@@ -9,8 +10,9 @@ const App = () => {
     const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
-    const [filterText, setNewFilterText] = useState('')
-    const [filteredPersons, setNewFilteredPersons] = useState([])
+    const [filterText, setFilterText] = useState('')
+    const [filteredPersons, setFilteredPersons] = useState([])
+    const [notificationMessage, setNotificationMessage] = useState({type: '', text: ''})
 
     const handleNameChange = (event) => {
         setNewName(event.target.value)
@@ -21,7 +23,7 @@ const App = () => {
     }
 
     const handleFilterTextChange = (event) => {
-        setNewFilterText(event.target.value)
+        setFilterText(event.target.value)
         
         // Case insensivity is achieved by putting both strings in lower case.
         // Because of the asynchronous nature of the React state set function,
@@ -30,7 +32,7 @@ const App = () => {
             person => person.name.toLowerCase().includes(
                       event.target.value.toLowerCase()))
 
-        setNewFilteredPersons(filteredArray)
+        setFilteredPersons(filteredArray)
         console.log(filteredArray)   
     }
 
@@ -38,17 +40,20 @@ const App = () => {
         event.preventDefault()
         const targetPerson = persons.find(person => person.name === newName)
         if (targetPerson){
-            if(window.confirm(`${newName} is already added to phonebook, replace the old number with
-                            a new one?`)){
-                personsDatabase.replace(targetPerson.id, {...targetPerson, number: newNumber}).then(
-                    response => {personsDatabase.getAll().then(
-                        response => updateAllPersonsStateVariables(response.data))}) 
+            if(window.confirm(`${newName} is already added to phonebook, 
+                               replace the old number with a new one?`)){
+                personsDatabase.replace(targetPerson.id, {...targetPerson, number: newNumber})
+                    .then(() => {personsDatabase.getAll()
+                    .then(response => updateAllPersonsStateVariables(response.data))}) 
             }
         }
         else {
-            personsDatabase.create({name: newName, number: newNumber}).then(
-                response => {personsDatabase.getAll().then(
-                    response => updateAllPersonsStateVariables(response.data))})                    
+            personsDatabase.create({name: newName, number: newNumber})
+                .then(() => personsDatabase.getAll())
+                .then(response => updateAllPersonsStateVariables(response.data))
+                .then(() => {setNotificationMessage({type: 'info', text: `Added ${newName}`})
+                             setTimeout(()=> setNotificationMessage({type: '', text: ''}), 5000)
+                            })  
         }
     }
 
@@ -58,7 +63,7 @@ const App = () => {
         let filteredArray = dbPersons.filter(
             person => person.name.toLowerCase().includes(
                       filterText.toLowerCase()))
-        setNewFilteredPersons(filteredArray)
+        setFilteredPersons(filteredArray)
     }
 
     /* When deleting a person, make the user confirm this action first. 
@@ -82,6 +87,7 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+            <Notification message={notificationMessage}/>
             <Filter text={filterText} handlerFunction={handleFilterTextChange}/>
             <h2>add a new</h2>
             <PersonForm nameInput={newName} nameHandlerFunction={handleNameChange}

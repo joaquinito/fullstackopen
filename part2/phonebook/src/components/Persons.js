@@ -1,5 +1,3 @@
-import personsDatabase from "../services/personsDatabase"
-
 const Persons = ({personList, deletePerson}) => {
 
     console.log("the personList: ", personList)
