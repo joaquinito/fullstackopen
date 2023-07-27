@@ -29,8 +29,7 @@ const App = () => {
         // Because of the asynchronous nature of the React state set function,
         // we cannot use the filterText variable yet.
         let filteredArray = persons.filter(
-            person => person.name.toLowerCase().includes(
-                      event.target.value.toLowerCase()))
+            person => person.name.toLowerCase().includes(event.target.value.toLowerCase()))
 
         setFilteredPersons(filteredArray)
         console.log(filteredArray)   
@@ -51,6 +50,12 @@ const App = () => {
                                  setTimeout(() => setNotificationMessage({type: '', text: ''}), 
                                             5000)
                                 })
+                    .catch(() => {setNotificationMessage({type: 'error', 
+                    text: `Information of ${newName} has already been removed 
+                            from server`})
+                    setTimeout(() => setNotificationMessage({type: '', text: ''}), 
+                                5000)
+                    })
             }
         }
         else {
@@ -67,8 +72,7 @@ const App = () => {
         // Update both state variables 'persons' and 'filteredPersons'
         setPersons(dbPersons)
         let filteredArray = dbPersons.filter(
-            person => person.name.toLowerCase().includes(
-                      filterText.toLowerCase()))
+            person => person.name.toLowerCase().includes(filterText.toLowerCase()))
         setFilteredPersons(filteredArray)
     }
 
@@ -81,9 +85,9 @@ const App = () => {
     const deletePerson = (id) => {
         const targetPerson = persons.find(person => person.id === id)
         if(window.confirm(`Delete ${targetPerson.name}?`)){
-            personsDatabase.remove(id).then(
-                response => {personsDatabase.getAll().then(
-                    response => updateAllPersonsStateVariables(response.data))}) 
+            personsDatabase.remove(id)
+            .then(() => personsDatabase.getAll()
+            .then(response => updateAllPersonsStateVariables(response.data))) 
         }
     }
 
