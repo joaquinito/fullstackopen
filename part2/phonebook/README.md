@@ -1,1 +1,1 @@
-My solution for exercises 2.6 to 2.17 of the Full Stack Open course. (WIP)
+My solution for exercises 2.6 to 2.17 of the Full Stack Open course.
