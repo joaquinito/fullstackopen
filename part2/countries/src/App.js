@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react"
 import FindCountryForm from "./components/FindCountryForm"
 import CountryData from "./components/CountryData"
 import restCountries from "./services/restCountries"
@@ -38,7 +38,7 @@ function App() {
             }
             
             setSearchResult(filteredCountries)
-            console.log(filteredCountries)
+            console.log("Countries found: ", filteredCountries)
         }
     }
 
