@@ -30,6 +30,11 @@ app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
 })
 
+app.get('/info', (request, response) => {
+    const date = new Date()
+    response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`)
+})
+
 app.get('/api/persons', (request, response) => {
     response.json(persons)
 })
@@ -44,9 +49,10 @@ app.get('/api/persons/:id', (request, response) => {
     }
 })
 
-app.get('/info', (request, response) => {
-    const date = new Date()
-    response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`)
+app.delete('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
+    persons = persons.filter(person => person.id !== id)
+    response.status(204).end()
 })
 
 app.listen(PORT, () => {
