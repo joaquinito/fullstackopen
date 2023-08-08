@@ -4,12 +4,15 @@ const PORT = 3001
 //Import libraries
 const express = require('express') // Express web server framework
 const morgan = require('morgan') // HTTP request logger middleware for node.js
+const cors = require('cors') // Cross-Origin Resource Sharing
 
 // Create an express app
 const app = express()
 
 // Use the express.json middleware to parse JSON data sent to the server
 app.use(express.json())
+// Use the cors middleware to allow requests from different URL
+app.use(cors())
 
 // Define a custom token for logging request data
 morgan.token('data', (req, res) => {
