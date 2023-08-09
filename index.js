@@ -14,6 +14,8 @@ const app = express()
 app.use(express.json())
 // Use the cors middleware to allow requests from different URL
 app.use(cors())
+// Use the build middleware to serve static files from the 'build' directory
+app.use(express.static('build'))
 
 // Define a custom token for logging request data
 morgan.token('data', (req, res) => {
