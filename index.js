@@ -1,5 +1,6 @@
 // Port for the backend server
-const PORT = 3001
+const PORT = process.env.PORT || 3001
+console.log("Env variable PORT: ", process.env.PORT)
 
 //Import libraries
 const express = require('express') // Express web server framework
