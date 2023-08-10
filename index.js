@@ -91,7 +91,7 @@ app.get('/api/persons', (request, response) => {
 // HTTP GET request handler for /api/persons/:id
 app.get('/api/persons/:id', (request, response, next) => {
     Person.findById(request.params.id).then(person => {
-        if(person){
+        if (person) {
             response.json(person)
         }
         else {
@@ -101,7 +101,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 })
 
 // HTTP POST request handler for /api/persons
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const body = request.body
     if (!body.name) {
         return response.status(400).json({
@@ -124,7 +124,7 @@ app.post('/api/persons', (request, response) => {
 
     person.save().then(savedPerson => {
         response.json(savedPerson)
-    })
+    }).catch(error => next(error))
 })
 
 // HTTP PUT request handler for /api/persons/:id
@@ -147,7 +147,7 @@ app.delete('/api/persons/:id', (request, response) => {
     Person.findByIdAndRemove(request.params.id).then(result => {
         response.status(204).end()
     })
-    .catch(error => next(error))
+        .catch(error => next(error))
 })
 
 // Express server listening on the defined port 
@@ -166,10 +166,14 @@ app.use(unknownEndpoint)
 // Error handler middleware
 const errorHandler = (error, request, response, next) => {
     console.error(error.message)
-  
+
     if (error.name === 'CastError') {
-      return response.status(400).send({ error: 'malformatted id' })
-    } 
+        return response.status(400).send({ error: 'malformatted id' })
+    }
+    else if (error.name === 'ValidationError') {
+        return response.status(400).json({ error: error.message })
+    }
+
     next(error)
 }
 
