@@ -12,7 +12,7 @@ const App = () => {
     const [newNumber, setNewNumber] = useState('')
     const [filterText, setFilterText] = useState('')
     const [filteredPersons, setFilteredPersons] = useState([])
-    const [notificationMessage, setNotificationMessage] = useState({type: '', text: ''})
+    const [notificationMessage, setNotificationMessage] = useState({ type: '', text: '' })
 
     const handleNameChange = (event) => {
         setNewName(event.target.value)
@@ -24,7 +24,7 @@ const App = () => {
 
     const handleFilterTextChange = (event) => {
         setFilterText(event.target.value)
-        
+
         // Case insensivity is achieved by putting both strings in lower case.
         // Because of the asynchronous nature of the React state set function,
         // we cannot use the filterText variable yet.
@@ -32,39 +32,52 @@ const App = () => {
             person => person.name.toLowerCase().includes(event.target.value.toLowerCase()))
 
         setFilteredPersons(filteredArray)
-        console.log(filteredArray)   
+        console.log(filteredArray)
     }
 
     const addPerson = (event) => {
         event.preventDefault()
         const targetPerson = persons.find(person => person.name === newName)
 
-        if (targetPerson){
-            if(window.confirm(`${newName} is already added to phonebook, 
-                               replace the old number with a new one?`)){
-                personsDatabase.replace(targetPerson.id, {...targetPerson, number: newNumber})
+        if (targetPerson) {
+            if (window.confirm(`${newName} is already added to phonebook, 
+                               replace the old number with a new one?`)) {
+                personsDatabase.replace(targetPerson.id, { ...targetPerson, number: newNumber })
                     .then(() => personsDatabase.getAll())
                     .then(response => updateAllPersonsStateVariables(response.data))
-                    .then(() => {setNotificationMessage({type: 'info', 
-                                                         text: `${newName}'s number changed`})
-                                 setTimeout(() => setNotificationMessage({type: '', text: ''}), 
-                                            5000)
-                                })
-                    .catch(() => {setNotificationMessage({type: 'error', 
-                    text: `Information of ${newName} has already been removed 
+                    .then(() => {
+                        setNotificationMessage({
+                            type: 'info',
+                            text: `${newName}'s number changed`
+                        })
+                        setTimeout(() => setNotificationMessage({ type: '', text: '' }),
+                            5000)
+                    })
+                    .catch(() => {
+                        setNotificationMessage({
+                            type: 'error',
+                            text: `Information of ${newName} has already been removed 
                             from server`})
-                    setTimeout(() => setNotificationMessage({type: '', text: ''}), 
-                                5000)
+                        setTimeout(() => setNotificationMessage({ type: '', text: '' }),
+                            5000)
                     })
             }
         }
         else {
-            personsDatabase.create({name: newName, number: newNumber})
+            personsDatabase.create({ name: newName, number: newNumber })
                 .then(() => personsDatabase.getAll())
                 .then(response => updateAllPersonsStateVariables(response.data))
-                .then(() => {setNotificationMessage({type: 'info', text: `Added ${newName}`})
-                             setTimeout(()=> setNotificationMessage({type: '', text: ''}), 5000)
-                            })  
+                .then(() => {
+                    setNotificationMessage({ type: 'info', text: `Added ${newName}` })
+                    setTimeout(() => setNotificationMessage({ type: '', text: '' }), 5000)
+                }).catch(error => {
+                    setNotificationMessage({
+                        type: 'error',
+                        text: error.response.data.error
+                    })
+                    setTimeout(() => setNotificationMessage({ type: '', text: '' }),
+                        5000)
+                })
         }
     }
 
@@ -84,28 +97,30 @@ const App = () => {
     */
     const deletePerson = (id) => {
         const targetPerson = persons.find(person => person.id === id)
-        if(window.confirm(`Delete ${targetPerson.name}?`)){
+        if (window.confirm(`Delete ${targetPerson.name}?`)) {
             personsDatabase.remove(id)
-            .then(() => personsDatabase.getAll()
-            .then(response => updateAllPersonsStateVariables(response.data))) 
+                .then(() => personsDatabase.getAll()
+                    .then(response => updateAllPersonsStateVariables(response.data)))
         }
     }
 
-    useEffect(() => {personsDatabase.getAll()
-                                    .then(response => {setPersons(response.data)})}, [])
+    useEffect(() => {
+        personsDatabase.getAll()
+        .then(response => { setPersons(response.data) })
+    }, [])
 
     return (
         <div>
             <h2>Phonebook</h2>
-            <Notification message={notificationMessage}/>
-            <Filter text={filterText} handlerFunction={handleFilterTextChange}/>
+            <Notification message={notificationMessage} />
+            <Filter text={filterText} handlerFunction={handleFilterTextChange} />
             <h2>add a new</h2>
             <PersonForm nameInput={newName} nameHandlerFunction={handleNameChange}
-                        numberInput={newNumber} numberHandlerFunction={handleNumberChange}
-                        submitEventHandler={addPerson}/>
+                numberInput={newNumber} numberHandlerFunction={handleNumberChange}
+                submitEventHandler={addPerson} />
             <h2>Numbers</h2>
-            <Persons personList={filterText? filteredPersons : persons} 
-                     deletePerson={deletePerson}/>
+            <Persons personList={filterText ? filteredPersons : persons}
+                deletePerson={deletePerson} />
         </div>
     )
 }
