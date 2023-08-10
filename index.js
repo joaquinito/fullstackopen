@@ -1,3 +1,7 @@
+
+// Get environment variables from the .env file
+require('dotenv').config()
+
 // Port for the backend server
 const PORT = process.env.PORT || 3001
 console.log("Env variable PORT: ", process.env.PORT)
@@ -6,6 +10,9 @@ console.log("Env variable PORT: ", process.env.PORT)
 const express = require('express') // Express web server framework
 const morgan = require('morgan') // HTTP request logger middleware for node.js
 const cors = require('cors') // Cross-Origin Resource Sharing
+
+//Import models
+const Person = require('./models/person')
 
 // Create an express app
 const app = express()
@@ -74,18 +81,18 @@ app.get('/info', (request, response) => {
 
 // HTTP GET request handler for /api/persons
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Person.find({}).then(persons => {
+        response.json(persons)
+    })
 })
 
 // HTTP GET request handler for /api/persons/:id
 app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
-    requestedPerson = persons.find(person => person.id === id)
-    if (requestedPerson) {
-        response.json(requestedPerson)
-    } else {
-        response.status(404).end()
-    }
+
+    Person.findById(id).then(person => {
+        response.json(person)
+    })
 })
 
 // HTTP POST request handler for /api/persons
@@ -105,14 +112,14 @@ app.post('/api/persons', (request, response) => {
         })
     }
 
-    const person = {
-        id: Math.floor(Math.random() * 1000000000), //id is a random number
+    const person = new Person({
         name: body.name,
         number: body.number
-    }
+    })
 
-    persons = persons.concat(person)
-    response.json(person)
+    person.save().then(savedPerson => {
+        response.json(savedPerson)
+    })
 })
 
 // HTTP DELETE request handler for /api/persons/:id
