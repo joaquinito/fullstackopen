@@ -44,7 +44,7 @@ app.use(morgan(function (tokens, req, res) {
     ].join(' ')
 }))
 
-// Persons data
+// Persons data - not used since we are using MongoDB
 let persons = [
     {
         "id": 1,
@@ -76,7 +76,9 @@ app.get('/', (request, response) => {
 // HTTP GET request handler for /info
 app.get('/info', (request, response) => {
     const date = new Date()
-    response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`)
+    Person.find({}).then(persons => {
+        response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`)
+    })
 })
 
 // HTTP GET request handler for /api/persons
@@ -87,12 +89,15 @@ app.get('/api/persons', (request, response) => {
 })
 
 // HTTP GET request handler for /api/persons/:id
-app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-
-    Person.findById(id).then(person => {
-        response.json(person)
-    })
+app.get('/api/persons/:id', (request, response, next) => {
+    Person.findById(request.params.id).then(person => {
+        if(person){
+            response.json(person)
+        }
+        else {
+            response.status(404).end() // id not found
+        }
+    }).catch(error => next(error))
 })
 
 // HTTP POST request handler for /api/persons
@@ -122,14 +127,51 @@ app.post('/api/persons', (request, response) => {
     })
 })
 
+// HTTP PUT request handler for /api/persons/:id
+app.put('/api/persons/:id', (request, response, next) => {
+
+    const person = {
+        name: request.body.name,
+        number: request.body.number
+    }
+
+    Person.findByIdAndUpdate(request.params.id, person, { new: true })
+        .then(updatedPerson => {
+            response.json(updatedPerson)
+        })
+        .catch(error => next(error))
+})
+
 // HTTP DELETE request handler for /api/persons/:id
 app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter(person => person.id !== id)
-    response.status(204).end()
+    Person.findByIdAndRemove(request.params.id).then(result => {
+        response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 // Express server listening on the defined port 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
+
+// Middleware for unknown endpoint
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint' })
+}
+
+// handler of requests with unknown endpoint
+app.use(unknownEndpoint)
+
+// Error handler middleware
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+  
+    if (error.name === 'CastError') {
+      return response.status(400).send({ error: 'malformatted id' })
+    } 
+    next(error)
+}
+
+// This has to be the last loaded middleware
+app.use(errorHandler)
