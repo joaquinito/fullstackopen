@@ -73,7 +73,7 @@ test('dummy returns one', () => {
     expect(result).toBe(1)
 })
 
-describe('total likes', () => {
+describe('total likes ', () => {
 
     test('of empty list is zero', () => {
         const result = listHelper.totalLikes([])
