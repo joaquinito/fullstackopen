@@ -2,28 +2,25 @@
 Route handlers.
 The event handlers of routes are commonly referred to as controllers, and for this reason 
 we have this in the "controllers" directory.
+Note that we are using the express-async-errors library to catch exceptions in async functions,
+instead of using try-catch in all of the route handlers. More information:
+https://fullstackopen.com/en/part4/testing_the_backend#eliminating-the-try-catch
 */
 
-const notesRouter = require('express').Router()
+const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 
 // HTTP GET 
-notesRouter.get('/', (request, response) => {
-    Blog
-        .find({})
-        .then(blogs => {
-            response.json(blogs)
-        })
+blogsRouter.get('/', async (request, response) => {
+    const blogs = await Blog.find({})
+    response.json(blogs)
 })
 
 // HTTP POST 
-notesRouter.post('/', (request, response) => {
+blogsRouter.post('/', async (request, response) => {
     const blog = new Blog(request.body)
-    blog
-        .save()
-        .then(result => {
-            response.status(201).json(result)
-        })
+    const savedBlog = await blog.save()
+    response.status(201).json(savedBlog)
 })
 
-module.exports = notesRouter
+module.exports = blogsRouter

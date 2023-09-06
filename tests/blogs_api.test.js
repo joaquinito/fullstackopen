@@ -65,8 +65,6 @@ describe('In a GET request to /api/blogs ', () => {
     expect(response.statusCode).toBe(200)
     expect(response.body[0].id).toBeDefined()
   })
-
-
 })
 
 describe('In a POST request to /api/blogs ', () => {
@@ -87,7 +85,6 @@ describe('In a POST request to /api/blogs ', () => {
 
     const blogAdded = blogsAtEnd.find(blog => blog.title === newBlog.title)
     expect(blogAdded).toBeDefined() //The new blog is in the database
-
   })
 
   test('a new blog without likes has 0 likes', async () => {
@@ -105,6 +102,28 @@ describe('In a POST request to /api/blogs ', () => {
 
     expect(blogAdded).toBeDefined() //The new blog is in the database
     expect(blogAdded.likes).toBe(0) //The new blog has 0 likes
-
   })
+
+  test('a new blog without title is rejected', async () => {
+    const newBlog = {
+      author: 'Jest',
+      url: 'www.jest.com',
+      likes: 0
+    }
+    const response = await api.post('/api/blogs').send(newBlog)
+
+    expect(response.statusCode).toBe(400) // HTTP 400 Bad Request
+  })
+
+  test('a new blog without url is rejected', async () => {
+    const newBlog = {
+      title: 'New blog from automated test without url',
+      author: 'Jest',
+      likes: 0
+    }
+    const response = await api.post('/api/blogs').send(newBlog)
+
+    expect(response.statusCode).toBe(400) // HTTP 400 Bad Request
+  })
+
 })
