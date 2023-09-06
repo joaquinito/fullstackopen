@@ -89,4 +89,22 @@ describe('In a POST request to /api/blogs ', () => {
     expect(blogAdded).toBeDefined() //The new blog is in the database
 
   })
+
+  test('a new blog without likes has 0 likes', async () => {
+    const newBlog = {
+      title: 'New blog from automated test without likes',
+      author: 'Jest',
+      url: 'www.jest.com'
+    }
+    const response = await api.post('/api/blogs').send(newBlog)
+
+    expect(response.statusCode).toBe(201) // HTTP 201 Created
+
+    const blogsAtEnd = await Blog.find({})
+    const blogAdded = blogsAtEnd.find(blog => blog.title === newBlog.title)
+
+    expect(blogAdded).toBeDefined() //The new blog is in the database
+    expect(blogAdded.likes).toBe(0) //The new blog has 0 likes
+
+  })
 })
