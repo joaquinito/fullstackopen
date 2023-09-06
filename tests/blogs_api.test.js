@@ -127,3 +127,24 @@ describe('In a POST request to /api/blogs ', () => {
   })
 
 })
+
+describe('In a DELETE request to /api/blogs/:id ', () => {
+
+  test('a blog is deleted', async () => {
+    const blogsAtStart = await Blog.find({})
+    const blogToDelete = blogsAtStart[0]
+
+    await api.delete(`/api/blogs/${blogToDelete.id}`)
+    const blogsAtEnd = await Blog.find({})
+    expect(blogsAtEnd.length).toBe(blogsAtStart.length - 1) // There is one less blog
+
+    const titles = blogsAtEnd.map(blog => blog.title)
+    expect(titles).not.toContain(blogToDelete.title) // The deleted blog is not in the database
+  })
+
+  test('an invalid id is rejected', async () => {
+    const invalidId = -1
+    const response = await api.delete(`/api/blogs/${invalidId}`)
+    expect(response.statusCode).toBe(400) // HTTP 400 Bad Request
+  })
+})
