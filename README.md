@@ -10,7 +10,8 @@ The URI used to connect to MongoDB Atlas in defined in a .env file in the projec
 Create a .env file in the root directory and add the following variables:
 
 ```
-MONGODB_URI=<URI>
 PORT=<port>
+MONGODB_URI=<DB_URI>
+TEST_MONGODB_URI=<TEST_DB_URI>
 ```
-The MongoDB URI can be obtained in the MongoDB Atlas database dashboard.
+The MongoDB URIs can be obtained in the MongoDB Atlas database dashboard.

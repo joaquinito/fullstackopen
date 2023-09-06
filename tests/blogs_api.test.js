@@ -5,10 +5,44 @@ Tests for the blogs API.
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
+const Blog = require('../models/blog')
 
 // supertest provides a high-level abstraction for testing HTTP requests
 const api = supertest(app)
 
+// Initial blogs in the test database
+const initialBlogs = [
+  {
+    title: 'First blog',
+    author: 'Ricardo',
+    url: 'www.firstblog.com',
+    likes: 2
+  },
+  {
+    title: 'Second blog',
+    author: 'Maria',
+    url: 'www.secondblog.com',
+    likes: 4
+  }
+]
+
+// Setup of the test database before each test
+beforeEach(async () => {
+  await Blog.deleteMany({})
+
+  let blogObject = new Blog(initialBlogs[0])
+  await blogObject.save()
+
+  blogObject = new Blog(initialBlogs[1])
+  await blogObject.save()
+})
+
+// Close the database connection after all tests are done
+afterAll(async () => {
+  await mongoose.connection.close()
+})
+
+// Tests start here
 describe('In a GET request to /api/blogs ', () => {
 
   test('blogs are returned as json', async () => {
@@ -32,7 +66,27 @@ describe('In a GET request to /api/blogs ', () => {
     expect(response.body[0].id).toBeDefined()
   })
 
-  afterAll(async () => {
-    await mongoose.connection.close()
+
+})
+
+describe('In a POST request to /api/blogs ', () => {
+
+  test('a new blog is added', async () => {
+    const newBlog = {
+      title: 'New blog from automated test',
+      author: 'Jest',
+      url: 'www.jest.com',
+      likes: 6
+    }
+    const response = await api.post('/api/blogs').send(newBlog)
+
+    expect(response.statusCode).toBe(201) // HTTP 201 Created
+
+    const blogsAtEnd = await Blog.find({})
+    expect(blogsAtEnd.length).toBe(initialBlogs.length + 1) // There one more blog
+
+    const blogAdded = blogsAtEnd.find(blog => blog.title === newBlog.title)
+    expect(blogAdded).toBeDefined() //The new blog is in the database
+
   })
 })
