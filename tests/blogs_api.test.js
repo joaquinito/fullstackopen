@@ -148,3 +148,27 @@ describe('In a DELETE request to /api/blogs/:id ', () => {
     expect(response.statusCode).toBe(400) // HTTP 400 Bad Request
   })
 })
+
+describe('In a PUT request to /api/blogs/:id ', () => {
+
+  test('a blog\'s likes is updated', async () => {
+    const blogsAtStart = await Blog.find({})
+    const blogToUpdate = blogsAtStart[0]
+
+    const updatedBlog = {
+      title: blogToUpdate.title,
+      author: blogToUpdate.author,
+      url: blogToUpdate.url,
+      likes: blogToUpdate.likes + 1
+    }
+    const response = await api.put(`/api/blogs/${blogToUpdate.id}`).send(updatedBlog)
+    expect(response.statusCode).toBe(200) // HTTP 200 OK
+    expect(response.body.likes).toBe(blogToUpdate.likes + 1) // The likes have been updated
+  })
+
+  test('an invalid id is rejected', async () => {
+    const invalidId = -1
+    const response = await api.put(`/api/blogs/${invalidId}`)
+    expect(response.statusCode).toBe(400) // HTTP 400 Bad Request
+  })
+})
