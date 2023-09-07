@@ -1,5 +1,5 @@
 /*
-Route handlers.
+Route handlers for database table 'blogs'.
 The event handlers of routes are commonly referred to as controllers, and for this reason 
 we have this in the "controllers" directory.
 Note that we are using the express-async-errors library to catch exceptions in async functions,

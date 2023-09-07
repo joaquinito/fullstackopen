@@ -56,7 +56,7 @@ describe('In a GET request to /api/blogs ', () => {
     const response = await api.get('/api/blogs')
 
     expect(response.statusCode).toBe(200)
-    expect(response.body.length).toBe(2)
+    expect(response.body.length).toBe(initialBlogs.length)
   })
 
   test('there is a property named id', async () => {
@@ -143,7 +143,7 @@ describe('In a DELETE request to /api/blogs/:id ', () => {
   })
 
   test('an invalid id is rejected', async () => {
-    const invalidId = -1
+    const invalidId = 0
     const response = await api.delete(`/api/blogs/${invalidId}`)
     expect(response.statusCode).toBe(400) // HTTP 400 Bad Request
   })
