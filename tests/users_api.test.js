@@ -3,19 +3,22 @@ Tests for the users API.
 */
 
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 const supertest = require('supertest')
 const app = require('../app')
 const User = require('../models/user')
+
 
 // supertest provides a high-level abstraction for testing HTTP requests
 const api = supertest(app)
 
 // Initial users in the test database
+
 initialUsers = [
     {
         username: 'kingG',
         name: 'King Gizzard',
-        password: 'weakpw123'
+        passwordHash: '$2b$10$8e9ZDlpVDePBb/eH8i2HxePYReQqBdbPQCDKGZ7No5EKguHeZz6VS'
     }
 ]
 
@@ -41,6 +44,22 @@ describe('In a POST request to /api/users ', () => {
         password: 'weakpw456'
     }
 
+    const existingUser = {
+        username: 'kingG',
+        name: 'King Gizzard',
+        password : 'weakpw123'
+    }
+
+    const userWithoutUsername = {
+        name: 'Incomplete User',
+        password: 'weakpw456'
+    }
+
+    const userWithoutPassword = {
+        username: 'incUser',
+        name: 'Incomplete User'
+    }
+
     test('a new user is created', async () => {
 
         const response = await api.post('/api/users').send(newUser)
@@ -53,30 +72,51 @@ describe('In a POST request to /api/users ', () => {
         expect(userAdded).toBeDefined() //The new user is in the database
     })
 
-    test('the password has been hashed', async () => {
-    
-        const response = await api.post('/api/users').send(newUser)
-        expect(response.statusCode).toBe(201) // HTTP 201 Created
+test('the password has been hashed', async () => {
 
-        const usersAtEnd = await User.find({})
-        const userAdded = usersAtEnd.find(user => user.username === newUser.username)
-        expect(userAdded.passwordHash).not.toBe(newUser.password) 
-    })
+    const response = await api.post('/api/users').send(newUser)
+    expect(response.statusCode).toBe(201) // HTTP 201 Created
+
+    const usersAtEnd = await User.find({})
+    const userAdded = usersAtEnd.find(user => user.username === newUser.username)
+    expect(userAdded.passwordHash).not.toBe(newUser.password)
+})
+
+test('a user with an existing username is not created', async () => {
+
+    const response = await api.post('/api/users').send(existingUser)
+    expect(response.statusCode).toBe(400) // HTTP 400 Bad Request
+    expect(response.body.error).toContain('username already exists')
+})
+
+test('a user with a missing username is not created', async () => {
+
+    const response = await api.post('/api/users').send(userWithoutUsername)
+    expect(response.statusCode).toBe(400) // HTTP 400 Bad Request
+    expect(response.body.error).toContain('username is required')
+})
+
+test('a user with a missing password is not created', async () => {
+
+    const response = await api.post('/api/users').send(userWithoutPassword)
+    expect(response.statusCode).toBe(400) // HTTP 400 Bad Request
+    expect(response.body.error).toContain('password is required')
+})
 })
 
 describe('In a GET request to /api/users ', () => {
 
     test('users are returned as json', async () => {
         const response = await api.get('/api/users')
-    
+
         expect(response.statusCode).toBe(200)
         expect(response.type).toBe('application/json')
-      })
-    
-      test('the number of users is correct', async () => {
+    })
+
+    test('the number of users is correct', async () => {
         const response = await api.get('/api/users')
-    
+
         expect(response.statusCode).toBe(200)
         expect(response.body.length).toBe(initialUsers.length)
-      })
+    })
 })

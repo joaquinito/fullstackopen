@@ -19,13 +19,27 @@ const unknownEndpoint = (request, response) => {
 
 // Error handler middleware
 const errorHandler = (error, request, response, next) => {
-    logger.error(error.message)
+    logger.error("Error received: ", error)
+    logger.error("||||||||||||||||||||||||||||")
 
     if (error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id' })
-    } 
+    }
     else if (error.name === 'ValidationError') {
-        return response.status(400).json({ error: error.message })
+        if (error.errors.username) {
+            return response.status(400).json({ error: 'username is required' })
+        }
+        else if (error.errors.password) {
+            return response.status(400).json({ error: 'password is required' })
+        }
+        else {
+            return response.status(400).json({ error: error.message })
+
+        }
+    }
+    // MongoDB error code 11000 indicates a duplicate key error
+    else if (error.name === 'MongoServerError' && error.code === 11000) {
+        return response.status(400).json({ error: 'username already exists' })
     }
 
     next(error)
