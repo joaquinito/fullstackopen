@@ -9,17 +9,31 @@ https://fullstackopen.com/en/part4/testing_the_backend#eliminating-the-try-catch
 
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 // HTTP GET 
 blogsRouter.get('/', async (request, response) => {
-    const blogs = await Blog.find({})
+    // .populate('user') will make the 'user' field of the blog document 
+    // contain the information of the user who created the blog
+    const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 , id: 1 })
     response.json(blogs)
 })
 
 // HTTP POST 
 blogsRouter.post('/', async (request, response) => {
-    const blog = new Blog(request.body)
+
+    const users = await User.find({})
+    const blog = new Blog({
+        title: request.body.title,
+        author: request.body.author,
+        url: request.body.url,
+        likes: request.body.likes,
+        user: users[0]._id
+    })
+
     const savedBlog = await blog.save()
+    users[0].blogs = users[0].blogs.concat(savedBlog._id)
+    await users[0].save()
     response.status(201).json(savedBlog)
 })
 

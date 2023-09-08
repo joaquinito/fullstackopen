@@ -2,44 +2,32 @@
 Tests for the blogs API.
 */
 
-const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const { startTestDatabase, closeTestDatabase, initialBlogs } = require('./db_setup_for_tests')
 
 // supertest provides a high-level abstraction for testing HTTP requests
 const api = supertest(app)
 
-// Initial blogs in the test database
-const initialBlogs = [
-  {
-    title: 'First blog',
-    author: 'Ricardo',
-    url: 'www.firstblog.com',
-    likes: 2
-  },
-  {
-    title: 'Second blog',
-    author: 'Maria',
-    url: 'www.secondblog.com',
-    likes: 4
-  }
-]
+// Setup of the test database before any test in this module
+beforeAll(async () => {
+  await startTestDatabase()
+})
 
 // Setup of the test database before each test
 beforeEach(async () => {
   await Blog.deleteMany({})
 
-  let blogObject = new Blog(initialBlogs[0])
-  await blogObject.save()
-
-  blogObject = new Blog(initialBlogs[1])
-  await blogObject.save()
+  for(const blog of initialBlogs){
+    let blogObject = new Blog(blog)
+    await blogObject.save()
+  }
 })
 
 // Close the database connection after all tests are done
 afterAll(async () => {
-  await mongoose.connection.close()
+  await closeTestDatabase()
 })
 
 // Tests start here
