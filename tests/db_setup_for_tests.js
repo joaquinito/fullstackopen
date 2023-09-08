@@ -1,5 +1,5 @@
 /*
-
+Data and functions for setting up the test database. 
 */
 
 const mongoose = require('mongoose')

@@ -7,9 +7,18 @@ instead of using try-catch in all of the route handlers. More information:
 https://fullstackopen.com/en/part4/testing_the_backend#eliminating-the-try-catch
 */
 
+const jwt = require('jsonwebtoken')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+
+const getTokenFrom = (request) => {
+    const authorization = request.get('authorization')
+    if (authorization && authorization.startsWith('Bearer ')) {
+        return authorization.replace('Bearer ', '')
+    }
+    return null
+}
 
 // HTTP GET 
 blogsRouter.get('/', async (request, response) => {
@@ -22,18 +31,24 @@ blogsRouter.get('/', async (request, response) => {
 // HTTP POST 
 blogsRouter.post('/', async (request, response) => {
 
-    const users = await User.find({})
+    const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+    if (!decodedToken.id) {
+        // 401 Unauthorized
+        return response.status(401).json({ error: 'token missing or invalid' })
+    }
+
+    const user = await User.findById(decodedToken.id)
     const blog = new Blog({
         title: request.body.title,
         author: request.body.author,
         url: request.body.url,
         likes: request.body.likes,
-        user: users[0]._id
+        user: user._id
     })
 
     const savedBlog = await blog.save()
-    users[0].blogs = users[0].blogs.concat(savedBlog._id)
-    await users[0].save()
+    user.blogs = user.blogs.concat(savedBlog._id)
+    await user.save()
     response.status(201).json(savedBlog)
 })
 

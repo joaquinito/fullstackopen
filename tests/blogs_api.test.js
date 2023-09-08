@@ -6,6 +6,7 @@ const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
 const { startTestDatabase, closeTestDatabase, initialBlogs } = require('./db_setup_for_tests')
+const User = require('../models/user')
 
 // supertest provides a high-level abstraction for testing HTTP requests
 const api = supertest(app)
@@ -19,7 +20,7 @@ beforeAll(async () => {
 beforeEach(async () => {
   await Blog.deleteMany({})
 
-  for(const blog of initialBlogs){
+  for (const blog of initialBlogs) {
     let blogObject = new Blog(blog)
     await blogObject.save()
   }
@@ -29,6 +30,15 @@ beforeEach(async () => {
 afterAll(async () => {
   await closeTestDatabase()
 })
+
+const getToken = async () => {
+  credentials = {
+    username: 'kingG',
+    password: 'weakpw123'
+  }
+  const response = await api.post('/api/login').send(credentials)
+  return response.body.token
+}
 
 // Tests start here
 describe('In a GET request to /api/blogs ', () => {
@@ -57,14 +67,19 @@ describe('In a GET request to /api/blogs ', () => {
 
 describe('In a POST request to /api/blogs ', () => {
 
-  test('a new blog is added', async () => {
-    const newBlog = {
-      title: 'New blog from automated test',
-      author: 'Jest',
-      url: 'www.jest.com',
-      likes: 6
-    }
-    const response = await api.post('/api/blogs').send(newBlog)
+  const newBlog = {
+    title: 'New blog from automated test',
+    author: 'Jest',
+    url: 'www.jest.com',
+    likes: 6
+  }
+
+  test('a new blog is added if the request comes from logged-in user', async () => {
+
+    const jwtoken = await getToken()
+    const response = await api.post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `Bearer ${jwtoken}`)
 
     expect(response.statusCode).toBe(201) // HTTP 201 Created
 
@@ -75,41 +90,80 @@ describe('In a POST request to /api/blogs ', () => {
     expect(blogAdded).toBeDefined() //The new blog is in the database
   })
 
-  test('a new blog without likes has 0 likes', async () => {
-    const newBlog = {
-      title: 'New blog from automated test without likes',
-      author: 'Jest',
-      url: 'www.jest.com'
-    }
+  test('a new blog is not added without a logged-in user', async () => {
+
     const response = await api.post('/api/blogs').send(newBlog)
+
+    expect(response.statusCode).toBe(401) // HTTP 401 Unauthorized 
+  })
+
+  test('the creator of a new blog is the logged-in user', async () => {
+
+    const jwtoken = await getToken()
+    const response = await api.post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `Bearer ${jwtoken}`)
 
     expect(response.statusCode).toBe(201) // HTTP 201 Created
 
     const blogsAtEnd = await Blog.find({})
-    const blogAdded = blogsAtEnd.find(blog => blog.title === newBlog.title)
+    const blogAdded = blogsAtEnd
+      .find(blog => blog.title === newBlog.title)
+
+    console.log("blogAdded: ", blogAdded)
+
+    const loggedInUser = await User.findOne({ username: 'kingG' })
+    expect(blogAdded.user.toString()).toBe(loggedInUser.id)
+  })
+
+  test('a new blog without likes has 0 likes', async () => {
+
+    const newBlogWithoutLikes = {
+      title: 'New blog from automated test without likes',
+      author: 'Jest',
+      url: 'www.jest.com'
+    }
+    const jwtoken = await getToken()
+    const response = await api.post('/api/blogs')
+      .send(newBlogWithoutLikes)
+      .set('Authorization', `Bearer ${jwtoken}`)
+
+    expect(response.statusCode).toBe(201) // HTTP 201 Created
+
+    const blogsAtEnd = await Blog.find({})
+    const blogAdded = blogsAtEnd
+      .find(blog => blog.title === newBlogWithoutLikes.title)
 
     expect(blogAdded).toBeDefined() //The new blog is in the database
     expect(blogAdded.likes).toBe(0) //The new blog has 0 likes
   })
 
   test('a new blog without title is rejected', async () => {
-    const newBlog = {
+
+    const newBlogWithoutTile = {
       author: 'Jest',
       url: 'www.jest.com',
       likes: 0
     }
-    const response = await api.post('/api/blogs').send(newBlog)
+    const jwtoken = await getToken()
+    const response = await api.post('/api/blogs')
+      .send(newBlogWithoutTile)
+      .set('Authorization', `Bearer ${jwtoken}`)
 
     expect(response.statusCode).toBe(400) // HTTP 400 Bad Request
   })
 
   test('a new blog without url is rejected', async () => {
-    const newBlog = {
+
+    const newBlogWithoutUrl = {
       title: 'New blog from automated test without url',
       author: 'Jest',
       likes: 0
     }
-    const response = await api.post('/api/blogs').send(newBlog)
+    const jwtoken = await getToken()
+    const response = await api.post('/api/blogs')
+      .send(newBlogWithoutUrl)
+      .set('Authorization', `Bearer ${jwtoken}`)
 
     expect(response.statusCode).toBe(400) // HTTP 400 Bad Request
   })
