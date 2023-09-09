@@ -12,6 +12,11 @@ const initialUsers = [
         username: 'kingG',
         name: 'King Gizzard',
         passwordHash: '$2b$10$8e9ZDlpVDePBb/eH8i2HxePYReQqBdbPQCDKGZ7No5EKguHeZz6VS'
+    },
+    {
+        username: 'lWizz',
+        name: 'Lizard Wizzard',
+        passwordHash: '$2b$10$8e9ZDlpVDePBb/eH8i2HxePYReQqBdbPQCDKGZ7No5EKguHeZz6VS'
     }
 ]
 
@@ -40,16 +45,18 @@ const startTestDatabase = async () => {
     await User.deleteMany({})
     await Blog.deleteMany({})
 
-    let userObject = new User(initialUsers[0])
-    await userObject.save()
+    for(let user of initialUsers) {
+        let userObject = new User(user)
+        await userObject.save()
+    }
 
-    let blogObject = new Blog(initialBlogs[0])
-    blogObject.user = userObject._id
-    await blogObject.save()
-
-    blogObject = new Blog(initialBlogs[1])
-    blogObject.user = userObject._id
-    await blogObject.save()
+    user_kingG = await User.findOne({ username: 'kingG' })
+   
+    for (let blog of initialBlogs) {
+        let blogObject = new Blog(blog)
+        blogObject.user = user_kingG._id
+        await blogObject.save()
+    }
 }
 
 /* Close the mongoose connection */

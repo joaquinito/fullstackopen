@@ -17,10 +17,8 @@ const favoriteBlog = (blogs) => {
 
 const mostBlogs = (blogs) => {
     const groupedByAuthor = _.groupBy(blogs, 'author');
-    //console.log("groupedByAuthor: ", groupedByAuthor)
     const authorWithMostEntries = _.maxBy(Object.keys(groupedByAuthor),
         author => groupedByAuthor[author].length);
-    //console.log("authorWithMostEntries: ", authorWithMostEntries)
 
     if (authorWithMostEntries === undefined) {
         return {}
@@ -35,10 +33,8 @@ const mostBlogs = (blogs) => {
 
 const mostLikes = (blogs) => {
     const groupedByAuthor = _.groupBy(blogs, 'author');
-    //console.log("groupedByAuthor: ", groupedByAuthor)
     const authorWithMostLikes = _.maxBy(Object.keys(groupedByAuthor),
         author => totalLikes(groupedByAuthor[author]));
-    //console.log("authorWithMostLikes: ", authorWithMostLikes)
 
     if (authorWithMostLikes === undefined) {
         return {}

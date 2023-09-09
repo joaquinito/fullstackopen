@@ -12,19 +12,11 @@ const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
-const getTokenFrom = (request) => {
-    const authorization = request.get('authorization')
-    if (authorization && authorization.startsWith('Bearer ')) {
-        return authorization.replace('Bearer ', '')
-    }
-    return null
-}
-
 // HTTP GET 
 blogsRouter.get('/', async (request, response) => {
     // .populate('user') will make the 'user' field of the blog document 
     // contain the information of the user who created the blog
-    const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 , id: 1 })
+    const blogs = await Blog.find({}).populate('user', { username: 1, name: 1, id: 1 })
     response.json(blogs)
 })
 
@@ -54,7 +46,32 @@ blogsRouter.post('/', async (request, response) => {
 
 // HTTP DELETE
 blogsRouter.delete('/:id', async (request, response) => {
-    await Blog.findByIdAndRemove(request.params.id)
+
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+
+    // Check if the user is logged in
+    if (!decodedToken.id) {
+        // 401 Unauthorized
+        return response.status(401).json({ error: 'token missing or invalid' })
+    }
+
+    // Check if the blog exists
+    const blog = await Blog.findById(request.params.id)
+    if (!blog) {
+        return response.status(404).json({ error: 'blog not found' })
+    }
+    else {
+        // Check if the user is the creator of the blog
+        if (decodedToken.id.toString() !== blog.user.toString()) {
+            return response.status(401).json({
+                error: 'only the creator of the blog can delete it'
+            })
+        }
+        else {
+            await Blog.findByIdAndRemove(request.params.id)
+        }
+    }
+
     response.status(204).end()
 })
 

@@ -10,17 +10,9 @@ const { startTestDatabase, closeTestDatabase, initialUsers } = require('./db_set
 // supertest provides a high-level abstraction for testing HTTP requests
 const api = supertest(app)
 
-// Setup of the test database before any test in this module
-beforeAll(async () => {
-    await startTestDatabase()
-})
-
 // Setup of the test database before each test
 beforeEach(async () => {
-    await User.deleteMany({})
-
-    let userObject = new User(initialUsers[0])
-    await userObject.save()
+    await startTestDatabase()
 })
 
 // Close the database connection after all tests are done
@@ -32,8 +24,8 @@ afterAll(async () => {
 describe('In a POST request to /api/users ', () => {
 
     const newUser = {
-        username: 'lWizz',
-        name: 'Lizard Wizzard',
+        username: 'tImpala',
+        name: 'tame Impala',
         password: 'weakpw456'
     }
 
@@ -59,7 +51,7 @@ describe('In a POST request to /api/users ', () => {
         expect(response.statusCode).toBe(201) // HTTP 201 Created
 
         const usersAtEnd = await User.find({})
-        expect(usersAtEnd.length).toBe(initialUsers.length + 1) // There is one user
+        expect(usersAtEnd.length).toBe(initialUsers.length + 1) // There is one more user
 
         const userAdded = usersAtEnd.find(user => user.username === newUser.username)
         expect(userAdded).toBeDefined() //The new user is in the database
