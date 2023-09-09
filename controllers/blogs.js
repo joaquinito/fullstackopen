@@ -23,13 +23,13 @@ blogsRouter.get('/', async (request, response) => {
 // HTTP POST 
 blogsRouter.post('/', async (request, response) => {
 
-    const decodedToken = jwt.verify(request.token, process.env.SECRET)
-    if (!decodedToken.id) {
-        // 401 Unauthorized
+    // request.user is set in the userExtractor middleware function
+    const user = request.user
+
+    if (!user) {
         return response.status(401).json({ error: 'token missing or invalid' })
     }
-
-    const user = await User.findById(decodedToken.id)
+    
     const blog = new Blog({
         title: request.body.title,
         author: request.body.author,
@@ -47,11 +47,10 @@ blogsRouter.post('/', async (request, response) => {
 // HTTP DELETE
 blogsRouter.delete('/:id', async (request, response) => {
 
-    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    // request.user is set in the userExtractor middleware function
+    const user = request.user
 
-    // Check if the user is logged in
-    if (!decodedToken.id) {
-        // 401 Unauthorized
+    if (!user) {
         return response.status(401).json({ error: 'token missing or invalid' })
     }
 
@@ -62,7 +61,7 @@ blogsRouter.delete('/:id', async (request, response) => {
     }
     else {
         // Check if the user is the creator of the blog
-        if (decodedToken.id.toString() !== blog.user.toString()) {
+        if (user.id.toString() !== blog.user.toString()) {
             return response.status(401).json({
                 error: 'only the creator of the blog can delete it'
             })

@@ -2,7 +2,9 @@
 Custom middleware functions.
 */
 
+const jwt = require('jsonwebtoken')
 const logger = require('./logger')
+const User = require('../models/user')
 
 const requestLogger = (request, response, next) => {
     logger.info('Method:', request.method)
@@ -18,6 +20,30 @@ const tokenExtractor = (request, response, next) => {
     if (authorization && authorization.startsWith('Bearer ')) {
         request.token = authorization.replace('Bearer ', '')
     }
+    next()
+}
+
+
+// Middleware function for getting the user corresponding to the JsonWebToken 
+// in the request's header
+const userExtractor = async (request, response, next) => {
+
+    const authorization = request.get('authorization')
+    if (authorization && authorization.startsWith('Bearer ')) {
+
+        const token = authorization.replace('Bearer ', '')
+        const decodedToken = jwt.verify(token, process.env.SECRET)
+        if (!decodedToken.id) {
+            // 401 Unauthorized
+            return response.status(401).json({ error: 'token missing or invalid' })
+        }
+
+        request.user = await User.findById(decodedToken.id)
+    }
+    else{
+        request.user = null
+    }
+    
     next()
 }
 
@@ -57,6 +83,7 @@ const errorHandler = (error, request, response, next) => {
 module.exports = {
     requestLogger,
     tokenExtractor,
+    userExtractor,
     unknownEndpoint,
     errorHandler
 }
