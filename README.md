@@ -1,7 +1,7 @@
 # fullstackopen3
 My submissions for the Full Stack Open course.
 
-Second repository started for [Part 4 - Testing Express servers, user administration](https://fullstackopen.com/en/part4).
+Third repository, started for [Part 4 - Testing Express servers, user administration](https://fullstackopen.com/en/part4).
 
 ## Environment variables
 
