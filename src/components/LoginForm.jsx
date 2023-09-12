@@ -1,17 +1,17 @@
 
-const LoginForm = ({ nameInput, passwordInput, usernameChangeHandler,
-    passwordChangeHandler, submitEventHandler }) => {
+const LoginForm = ({ usernameChangeHandler, passwordChangeHandler,
+    submitEventHandler }) => {
 
     return (
         <div>
             <h2> log in to application </h2>
             <form onSubmit={submitEventHandler}>
                 <div>
-                    username <input value={nameInput}
+                    username <input
                         onChange={({ target }) => usernameChangeHandler(target.value)} />
                 </div>
                 <div>
-                    password <input value={passwordInput} type="password"
+                    password <input type="password"
                         onChange={({ target }) => passwordChangeHandler(target.value)} />
                 </div>
                 <div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import LoginForm from './components/LoginForm'
+import AddBlogForm from './components/AddBlogForm'
 import BlogList from './components/BlogList'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -9,6 +10,9 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [newBlogTitle, setNewBlogTitle] = useState('')
+  const [newBlogAuthor, setNewBlogAuthor] = useState('')
+  const [newBlogUrl, setNewBlogUrl] = useState('')
   const [user, setUser] = useState(null)
 
   // Effect hook to get all blogs.
@@ -17,11 +21,9 @@ const App = () => {
   useEffect(() => {
     const getBlogs = async () => {
       const blogs = await blogService.getAll()
-      console.log('my blogs', blogs)
       setBlogs(blogs)
     }
     getBlogs().catch(console.error)
-    console.log('my my blogs', blogs)
   }, [])
 
   // Effect hook to check if user has already logged in
@@ -51,7 +53,8 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-    } catch (exception) {
+    }
+    catch (exception) {
       setErrorMessage('Wrong credentials')
       setTimeout(() => {
         setErrorMessage(null)
@@ -64,11 +67,27 @@ const App = () => {
     setUser(null)
   }
 
+  const handleAddBlog = async (event) => {
+    event.preventDefault()
+    // console.log('adding blog', newBlogTitle, newBlogAuthor, newBlogUrl)
+
+    try {
+      const blog = await blogService.add({
+        title: newBlogTitle,
+        author: newBlogAuthor,
+        url: newBlogUrl
+      })
+      setBlogs(blogs.concat(blog))
+    }
+    catch (exception) {
+      setErrorMessage('Error adding blog')
+    }
+  }
+
   if (user === null) {
     return (
       <div>
-        <LoginForm nameInput={username} passwordInput={password}
-          usernameChangeHandler={setUsername} passwordChangeHandler={setPassword}
+        <LoginForm usernameChangeHandler={setUsername} passwordChangeHandler={setPassword}
           submitEventHandler={handleLogin} />
       </div>
     )
@@ -81,6 +100,9 @@ const App = () => {
           {user.name} logged in &nbsp;
           <button onClick={handleLogout}>logout</button>
         </div>
+        <br />
+        <AddBlogForm titleChangeHandler={setNewBlogTitle} authorChangeHandler={setNewBlogAuthor}
+          urlChangeHandler={setNewBlogUrl} submitEventHandler={handleAddBlog} />
         <br />
         <BlogList blogs={blogs} />
       </div>
