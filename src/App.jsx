@@ -2,18 +2,19 @@ import { useState, useEffect } from 'react'
 import LoginForm from './components/LoginForm'
 import AddBlogForm from './components/AddBlogForm'
 import BlogList from './components/BlogList'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [notificationMessage, setNotificationMessage] = useState({ type: '', text: '' })
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
+  const [blogs, setBlogs] = useState([])
   const [newBlogTitle, setNewBlogTitle] = useState('')
   const [newBlogAuthor, setNewBlogAuthor] = useState('')
   const [newBlogUrl, setNewBlogUrl] = useState('')
-  const [user, setUser] = useState(null)
 
   // Effect hook to get all blogs.
   // In order to user async/await in an effect hool, we need to define an async function 
@@ -38,7 +39,6 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    // console.log('logging in with username', username, 'and password', password)
 
     try {
       const user = await loginService.login({
@@ -55,10 +55,11 @@ const App = () => {
       setPassword('')
     }
     catch (exception) {
-      setErrorMessage('Wrong credentials')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      setNotificationMessage({
+        type: 'error',
+        text: 'Wrong credentials'
+      })
+      setTimeout(() => setNotificationMessage({ type: '', text: '' }), 3000)
     }
   }
 
@@ -69,7 +70,6 @@ const App = () => {
 
   const handleAddBlog = async (event) => {
     event.preventDefault()
-    // console.log('adding blog', newBlogTitle, newBlogAuthor, newBlogUrl)
 
     try {
       const blog = await blogService.add({
@@ -78,15 +78,26 @@ const App = () => {
         url: newBlogUrl
       })
       setBlogs(blogs.concat(blog))
+      setNotificationMessage({
+        type: 'info',
+        text: `Blog '${blog.title}' by ${blog.author} added`
+      })
+      setTimeout(() => setNotificationMessage({ type: '', text: '' }), 5000)
     }
     catch (exception) {
-      setErrorMessage('Error adding blog')
+      setNotificationMessage({
+        type: 'error',
+        text: 'Error adding blog'
+      })
+      setTimeout(() => setNotificationMessage({ type: '', text: '' }), 5000)
     }
   }
 
   if (user === null) {
     return (
       <div>
+        <h2> log in to application </h2>
+        <Notification message={notificationMessage} />
         <LoginForm usernameChangeHandler={setUsername} passwordChangeHandler={setPassword}
           submitEventHandler={handleLogin} />
       </div>
@@ -96,6 +107,7 @@ const App = () => {
     return (
       <div>
         <h2>blogs</h2>
+        <Notification message={notificationMessage} />
         <div>
           {user.name} logged in &nbsp;
           <button onClick={handleLogout}>logout</button>
