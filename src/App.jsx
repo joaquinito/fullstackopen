@@ -11,20 +11,43 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
+  // Effect hook to get all blogs.
+  // In order to user async/await in an effect hool, we need to define an async function 
+  // inside the effect hook. This is because the effect hook cannot be async by itself.
   useEffect(() => {
-    blogService.getAll().then(blogs =>
+    const getBlogs = async () => {
+      const blogs = await blogService.getAll()
+      console.log('my blogs', blogs)
       setBlogs(blogs)
-    )
+    }
+    getBlogs().catch(console.error)
+    console.log('my my blogs', blogs)
+  }, [])
+
+  // Effect hook to check if user has already logged in
+  useEffect(() => {
+    const loggedInUserJSON = window.localStorage.getItem('loggedInAppUser')
+    if (loggedInUserJSON) {
+      const user = JSON.parse(loggedInUserJSON)
+      setUser(user)
+      blogService.setToken(user.token)
+    }
   }, [])
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    console.log('logging in with', username, password)
+    // console.log('logging in with username', username, 'and password', password)
 
     try {
       const user = await loginService.login({
         username, password,
       })
+
+      window.localStorage.setItem(
+        'loggedInAppUser', JSON.stringify(user)
+      )
+      blogService.setToken(user.token)
+
       setUser(user)
       setUsername('')
       setPassword('')
@@ -34,6 +57,11 @@ const App = () => {
         setErrorMessage(null)
       }, 5000)
     }
+  }
+
+  const handleLogout = () => {
+    window.localStorage.removeItem('loggedInAppUser')
+    setUser(null)
   }
 
   if (user === null) {
@@ -49,7 +77,11 @@ const App = () => {
     return (
       <div>
         <h2>blogs</h2>
-        <p>{user.name} logged in</p>
+        <div>
+          {user.name} logged in &nbsp;
+          <button onClick={handleLogout}>logout</button>
+        </div>
+        <br />
         <BlogList blogs={blogs} />
       </div>
     )
