@@ -16,7 +16,7 @@ const App = () => {
   const addBlogFormRef = useRef()
 
   // Effect hook to get all blogs.
-  // In order to user async/await in an effect hool, we need to define an async function 
+  // In order to user async/await in an effect hool, we need to define an async function
   // inside the effect hook. This is because the effect hook cannot be async by itself.
   useEffect(() => {
     const getBlogs = async () => {
@@ -70,7 +70,6 @@ const App = () => {
   const handleAddNewBlog = async (newBlog) => {
 
     try {
-      console.log("newBlog: ", newBlog)
       const blog = await blogService.add(newBlog)
       const blogs = await blogService.getAll()
       setBlogs(blogs.sort((a, b) => b.likes - a.likes))
@@ -113,19 +112,19 @@ const App = () => {
   }
 
   const handleRemoveBlog = async (blog) => {
-      
-      try {
-        await blogService.remove(blog.id)
-        const blogs = await blogService.getAll()
-        setBlogs(blogs.sort((a, b) => b.likes - a.likes))
-      }
-      catch (exception) {
-        setNotificationMessage({
-          type: 'error',
-          text: 'Error removing blog'
-        })
-        setTimeout(() => setNotificationMessage({ type: '', text: '' }), 5000)
-      }
+
+    try {
+      await blogService.remove(blog.id)
+      const blogs = await blogService.getAll()
+      setBlogs(blogs.sort((a, b) => b.likes - a.likes))
+    }
+    catch (exception) {
+      setNotificationMessage({
+        type: 'error',
+        text: 'Error removing blog'
+      })
+      setTimeout(() => setNotificationMessage({ type: '', text: '' }), 5000)
+    }
   }
 
   if (user === null) {

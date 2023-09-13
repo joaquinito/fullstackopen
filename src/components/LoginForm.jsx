@@ -1,24 +1,33 @@
+import PropTypes from 'prop-types'
 
-const LoginForm = ({ usernameChangeHandler, passwordChangeHandler,
-    submitEventHandler }) => {
+const LoginForm = ({
+  usernameChangeHandler,
+  passwordChangeHandler,
+  submitEventHandler }) => {
 
-    return (
+  return (
+    <div>
+      <form onSubmit={submitEventHandler}>
         <div>
-            <form onSubmit={submitEventHandler}>
-                <div>
-                    username <input
-                        onChange={({ target }) => usernameChangeHandler(target.value)} />
-                </div>
-                <div>
-                    password <input type="password"
-                        onChange={({ target }) => passwordChangeHandler(target.value)} />
-                </div>
-                <div>
-                    <button type="submit">login</button>
-                </div>
-            </form>
+          username <input
+            onChange={({ target }) => usernameChangeHandler(target.value)} />
         </div>
-    )
+        <div>
+          password <input type="password"
+            onChange={({ target }) => passwordChangeHandler(target.value)} />
+        </div>
+        <div>
+          <button type="submit">login</button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+LoginForm.propTypes = {
+  usernameChangeHandler: PropTypes.func.isRequired,
+  passwordChangeHandler: PropTypes.func.isRequired,
+  submitEventHandler: PropTypes.func.isRequired,
 }
 
 export default LoginForm
