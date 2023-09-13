@@ -1,4 +1,3 @@
-
 const Notification = ({ message }) => {
 
     const infoNotification = {

@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import AddBlogForm from './components/AddBlogForm'
 import BlogList from './components/BlogList'
@@ -15,6 +16,7 @@ const App = () => {
   const [newBlogTitle, setNewBlogTitle] = useState('')
   const [newBlogAuthor, setNewBlogAuthor] = useState('')
   const [newBlogUrl, setNewBlogUrl] = useState('')
+  const addBlogFormRef = useRef()
 
   // Effect hook to get all blogs.
   // In order to user async/await in an effect hool, we need to define an async function 
@@ -78,6 +80,11 @@ const App = () => {
         url: newBlogUrl
       })
       setBlogs(blogs.concat(blog))
+      setNewBlogTitle('')
+      setNewBlogAuthor('')
+      setNewBlogUrl('')
+      addBlogFormRef.current.toggleVisibility()
+
       setNotificationMessage({
         type: 'info',
         text: `Blog '${blog.title}' by ${blog.author} added`
@@ -113,8 +120,10 @@ const App = () => {
           <button onClick={handleLogout}>logout</button>
         </div>
         <br />
-        <AddBlogForm titleChangeHandler={setNewBlogTitle} authorChangeHandler={setNewBlogAuthor}
-          urlChangeHandler={setNewBlogUrl} submitEventHandler={handleAddBlog} />
+        <Togglable buttonLabel='new blog' ref={addBlogFormRef}>
+          <AddBlogForm titleChangeHandler={setNewBlogTitle} authorChangeHandler={setNewBlogAuthor}
+            urlChangeHandler={setNewBlogUrl} submitEventHandler={handleAddBlog} />
+        </Togglable>
         <br />
         <BlogList blogs={blogs} />
       </div>

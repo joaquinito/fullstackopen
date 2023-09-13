@@ -3,7 +3,7 @@ const AddBlogForm = ({ titleChangeHandler, authorChangeHandler, urlChangeHandler
 
     return (
         <div>
-            <h2>create new</h2>
+            <h2>add new blog</h2>
             <form onSubmit={submitEventHandler}>
                 <div>
                     title: <input onChange={({ target }) => titleChangeHandler(target.value)} />
