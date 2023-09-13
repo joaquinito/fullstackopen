@@ -91,6 +91,28 @@ const App = () => {
     }
   }
 
+  const handleIncrementLikes = async (blog) => {
+
+    console.log("blog: ", blog)
+    try {
+      const updatedData = {
+        ...blog,
+        likes: blog.likes + 1
+      }
+      await blogService.update(blog.id, updatedData)
+      setBlogs(await blogService.getAll())
+    }
+    catch (exception) {
+      setNotificationMessage({
+        type: 'error',
+        text: 'Error updating blog'
+      })
+      setTimeout(() => setNotificationMessage({ type: '', text: '' }), 5000)
+    }
+
+
+  }
+
   if (user === null) {
     return (
       <div>
@@ -115,7 +137,8 @@ const App = () => {
           <AddBlogForm submitEventHandler={handleAddNewBlog} />
         </Togglable>
         <br />
-        {blogs.map(blog => <Blog blogData={blog} key={blog.title} />)}
+        {blogs.map(blog => <Blog blogData={blog} incrementLikesHandler={handleIncrementLikes}
+          key={blog.title} />)}
       </div>
     )
   }

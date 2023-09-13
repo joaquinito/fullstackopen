@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-const Blog = ({ blogData }) => {
+const Blog = ({ blogData, incrementLikesHandler }) => {
 
     const [detailedView, setdetailedView] = useState(false)
 
@@ -10,6 +10,9 @@ const Blog = ({ blogData }) => {
         border: 'solid',
         borderWidth: 1,
         marginBottom: 5
+    }
+    const incrementLikes = () => {
+        incrementLikesHandler(blogData)
     }
 
     return (
@@ -22,7 +25,7 @@ const Blog = ({ blogData }) => {
                     <div>
                         <p><a href={'//' + blogData.url} target="_blank" rel="noreferrer">
                             {blogData.url}</a></p>
-                        <p>likes {blogData.likes} <button >like</button></p>
+                        <p>likes {blogData.likes} <button onClick={incrementLikes}>like</button></p>
                         <p>{blogData.user.name}</p>
                     </div>
                     : null}
