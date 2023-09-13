@@ -13,9 +13,6 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [blogs, setBlogs] = useState([])
-  const [newBlogTitle, setNewBlogTitle] = useState('')
-  const [newBlogAuthor, setNewBlogAuthor] = useState('')
-  const [newBlogUrl, setNewBlogUrl] = useState('')
   const addBlogFormRef = useRef()
 
   // Effect hook to get all blogs.
@@ -70,19 +67,13 @@ const App = () => {
     setUser(null)
   }
 
-  const handleAddBlog = async (event) => {
-    event.preventDefault()
+  const handleAddNewBlog = async (newBlog) => {
 
     try {
-      const blog = await blogService.add({
-        title: newBlogTitle,
-        author: newBlogAuthor,
-        url: newBlogUrl
-      })
-      setBlogs(blogs.concat(blog))
-      setNewBlogTitle('')
-      setNewBlogAuthor('')
-      setNewBlogUrl('')
+      console.log("newBlog: ", newBlog)
+      const blog = await blogService.add(newBlog)
+      setBlogs(blogs.concat(newBlog))
+
       addBlogFormRef.current.toggleVisibility()
 
       setNotificationMessage({
@@ -121,8 +112,7 @@ const App = () => {
         </div>
         <br />
         <Togglable buttonLabel='new blog' ref={addBlogFormRef}>
-          <AddBlogForm titleChangeHandler={setNewBlogTitle} authorChangeHandler={setNewBlogAuthor}
-            urlChangeHandler={setNewBlogUrl} submitEventHandler={handleAddBlog} />
+          <AddBlogForm submitEventHandler={handleAddNewBlog} />
         </Togglable>
         <br />
         <BlogList blogs={blogs} />
