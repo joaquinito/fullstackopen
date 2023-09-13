@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import AddBlogForm from './components/AddBlogForm'
-import BlogList from './components/BlogList'
+import Blog from './components/Blog'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -72,7 +72,7 @@ const App = () => {
     try {
       console.log("newBlog: ", newBlog)
       const blog = await blogService.add(newBlog)
-      setBlogs(blogs.concat(newBlog))
+      setBlogs(await blogService.getAll())
 
       addBlogFormRef.current.toggleVisibility()
 
@@ -115,7 +115,7 @@ const App = () => {
           <AddBlogForm submitEventHandler={handleAddNewBlog} />
         </Togglable>
         <br />
-        <BlogList blogs={blogs} />
+        {blogs.map(blog => <Blog blogData={blog} key={blog.title} />)}
       </div>
     )
   }
