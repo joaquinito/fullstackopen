@@ -21,7 +21,7 @@ const App = () => {
   useEffect(() => {
     const getBlogs = async () => {
       const blogs = await blogService.getAll()
-      setBlogs(blogs)
+      setBlogs(blogs.sort((a, b) => b.likes - a.likes))
     }
     getBlogs().catch(console.error)
   }, [])
@@ -72,7 +72,8 @@ const App = () => {
     try {
       console.log("newBlog: ", newBlog)
       const blog = await blogService.add(newBlog)
-      setBlogs(await blogService.getAll())
+      const blogs = await blogService.getAll()
+      setBlogs(blogs.sort((a, b) => b.likes - a.likes))
 
       addBlogFormRef.current.toggleVisibility()
 
@@ -100,7 +101,8 @@ const App = () => {
         likes: blog.likes + 1
       }
       await blogService.update(blog.id, updatedData)
-      setBlogs(await blogService.getAll())
+      const blogs = await blogService.getAll()
+      setBlogs(blogs.sort((a, b) => b.likes - a.likes))
     }
     catch (exception) {
       setNotificationMessage({
