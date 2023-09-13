@@ -94,7 +94,6 @@ const App = () => {
 
   const handleIncrementLikes = async (blog) => {
 
-    console.log("blog: ", blog)
     try {
       const updatedData = {
         ...blog,
@@ -111,8 +110,22 @@ const App = () => {
       })
       setTimeout(() => setNotificationMessage({ type: '', text: '' }), 5000)
     }
+  }
 
-
+  const handleRemoveBlog = async (blog) => {
+      
+      try {
+        await blogService.remove(blog.id)
+        const blogs = await blogService.getAll()
+        setBlogs(blogs.sort((a, b) => b.likes - a.likes))
+      }
+      catch (exception) {
+        setNotificationMessage({
+          type: 'error',
+          text: 'Error removing blog'
+        })
+        setTimeout(() => setNotificationMessage({ type: '', text: '' }), 5000)
+      }
   }
 
   if (user === null) {
@@ -140,7 +153,7 @@ const App = () => {
         </Togglable>
         <br />
         {blogs.map(blog => <Blog blogData={blog} incrementLikesHandler={handleIncrementLikes}
-          key={blog.title} />)}
+          removeBlogHandler={handleRemoveBlog} key={blog.title} />)}
       </div>
     )
   }

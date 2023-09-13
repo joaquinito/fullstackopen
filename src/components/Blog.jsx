@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-const Blog = ({ blogData, incrementLikesHandler }) => {
+const Blog = ({ blogData, incrementLikesHandler, removeBlogHandler }) => {
 
     const [detailedView, setdetailedView] = useState(false)
 
@@ -15,6 +15,12 @@ const Blog = ({ blogData, incrementLikesHandler }) => {
         incrementLikesHandler(blogData)
     }
 
+    const removeBlog = () => {
+        if (window.confirm(`Remove blog "${blogData.title}" by ${blogData.author}?`)) {
+            removeBlogHandler(blogData)
+        }
+    }
+
     return (
         <div style={componentStyle} key={blogData.title}>
             <div>
@@ -25,8 +31,13 @@ const Blog = ({ blogData, incrementLikesHandler }) => {
                     <div>
                         <p><a href={'//' + blogData.url} target="_blank" rel="noreferrer">
                             {blogData.url}</a></p>
-                        <p>likes {blogData.likes} <button onClick={incrementLikes}>like</button></p>
+                        <p>likes {blogData.likes}
+                            <button onClick={incrementLikes}>like</button></p>
                         <p>{blogData.user.name}</p>
+                        {JSON.parse(window.localStorage.getItem('loggedInAppUser')).username ===
+                            blogData.user.username ?
+                            <button onClick={removeBlog}>remove</button>
+                            : null}
                     </div>
                     : null}
             </div>
