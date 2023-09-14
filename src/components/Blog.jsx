@@ -28,11 +28,13 @@ const Blog = ({
   return (
     <div style={componentStyle} key={blogData.title}>
       <div>
-        {blogData.title}, by {blogData.author} &nbsp;
-        <button onClick={() => setdetailedView(!detailedView)}>
-          {detailedView ? 'hide' : 'view'}</button>
+        <div>
+          {blogData.title}, by {blogData.author} &nbsp;
+          <button onClick={() => setdetailedView(!detailedView)}>
+            {detailedView ? 'hide' : 'view'}</button>
+        </div>
         {detailedView ?
-          <div>
+          <div id="blog-details">
             <p><a href={'//' + blogData.url} target="_blank" rel="noreferrer">
               {blogData.url}</a></p>
             <p>likes {blogData.likes}
