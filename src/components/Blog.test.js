@@ -42,10 +42,9 @@ describe('Component \'Blog\': ', () => {
 
   test('Clicking the button shows the url and likes', async () => {
 
-    const component = render(
-      <Blog blogData={blog}
-        incrementLikesHandler={mockFunction}
-        removeBlogHandler={mockFunction} />)
+    render(<Blog blogData={blog}
+      incrementLikesHandler={mockFunction}
+      removeBlogHandler={mockFunction} />)
 
     // Create a key-value pair in Local Storage to simulate that the test user is logged in
     window.localStorage.setItem(
@@ -53,11 +52,35 @@ describe('Component \'Blog\': ', () => {
 
     // Start a user session to interact with the rendered component, and click the button
     const user = userEvent.setup()
-    const button = screen.getByText('view')
-    await user.click(button)
+    const viewButton = screen.getByText('view')
+    await user.click(viewButton)
 
     // Check if the component renders the url and likes after the button is clicked
     screen.getByText('http://testurl.com', { exact: false })
     screen.getByText(/likes+\s+\d/) // regex for 'likes' followed by one or more spaces and a digit
+  })
+
+  test('Clicking the button twice calls the event handler twice', async () => {
+
+    render(<Blog blogData={blog}
+      incrementLikesHandler={mockFunction}
+      removeBlogHandler={mockFunction} />)
+
+    // Create a key-value pair in Local Storage to simulate that the test user is logged in
+    window.localStorage.setItem(
+      'loggedInAppUser', JSON.stringify(localStorageData))
+
+    // Start a user session to interact with the rendered component, and click the 'view' button
+    const user = userEvent.setup()
+    const viewButton = screen.getByText('view')
+    await user.click(viewButton)
+
+    // Click the 'like' button twice
+    const likeButton = screen.getByText('like')
+    await user.click(likeButton)
+    await user.click(likeButton)
+
+    // Check if the event handler function is called twice
+    expect(mockFunction.mock.calls).toHaveLength(2)
   })
 })
