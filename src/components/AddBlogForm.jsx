@@ -26,13 +26,16 @@ const AddBlogForm = ({ submitEventHandler }) => {
       <h2>add new blog</h2>
       <form onSubmit={createNewBlog}>
         <div>
-          title: <input onChange={({ target }) => setNewBlogTitle(target.value)} />
+          title: <input id="title-input"
+            onChange={({ target }) => setNewBlogTitle(target.value)} />
         </div>
         <div>
-          author: <input onChange={({ target }) => setNewBlogAuthor(target.value)} />
+          author: <input id="author-input"
+            onChange={({ target }) => setNewBlogAuthor(target.value)} />
         </div>
         <div>
-          url: <input onChange={({ target }) => setNewBlogUrl(target.value)} />
+          url: <input id="url-input"
+            onChange={({ target }) => setNewBlogUrl(target.value)} />
         </div>
         <div>
           <button type="submit">create</button>
