@@ -84,5 +84,24 @@ describe('Bloglist app', function () {
       // Check if blog's number of likes has increased to 1
       cy.contains('likes 1')
     })
+
+    it('A blog can be deleted by the user who added it', function () {
+
+      // Add a blog to the database (using the backend API)
+      cy.add_blog_to_db({
+        title: 'Cypress blog',
+        author: 'Cypress',
+        url: 'https://www.cypress.io/'
+      })
+
+      // Open blog detailed view
+      cy.get('.view-blog-details-button').click()
+
+      // Click 'remove' button
+      cy.get('.remove-blog-button').click()
+
+      // Check if blog is no longer shown
+      cy.contains('Cypress blog, by Cypress').should('not.exist')
+    })
   })
 })
