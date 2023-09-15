@@ -1,0 +1,18 @@
+// describe('template spec', () => {
+//   it('passes', () => {
+//     cy.visit('https://example.cypress.io')
+//   })
+// })
+
+describe('Bloglist app', function() {
+  beforeEach(function() {
+    cy.request('POST', 'http://localhost:3003/api/testing/reset')
+    cy.visit('http://localhost:5173')
+  })
+
+  it('Login form is shown', function() {
+    cy.contains('log in to application')
+    cy.contains('username')
+    cy.contains('password')
+  })
+})
