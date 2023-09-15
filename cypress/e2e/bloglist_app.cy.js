@@ -1,13 +1,11 @@
-// describe('template spec', () => {
-//   it('passes', () => {
-//     cy.visit('https://example.cypress.io')
-//   })
-// })
-
 describe('Bloglist app', function () {
   beforeEach(function () {
     cy.clean_db()
-    cy.add_user_to_db({ username: 'cyUser', name: 'Cypress User', password: 'cyPassword' })
+    cy.add_user_to_db({
+      username: 'cyUser',
+      name: 'Cypress User',
+      password: 'cyPassword'
+    })
   })
 
   it('Login form is shown', function () {
@@ -102,6 +100,38 @@ describe('Bloglist app', function () {
 
       // Check if blog is no longer shown
       cy.contains('Cypress blog, by Cypress').should('not.exist')
+    })
+
+    it('A blog cannot be deleted by a user who did not add it', function () {
+
+      // Add a blog to the database (using the backend API)
+      cy.add_blog_to_db({
+        title: 'Cypress blog',
+        author: 'Cypress',
+        url: 'https://www.cypress.io/'
+      })
+
+      // Log out user
+      cy.get('#logout-button').click()
+
+      // Add another user to the database (using the backend API)
+      cy.add_user_to_db({
+        username: 'cyUser2',
+        name: 'Cypress User 2',
+        password: 'cyPassword2'
+      })
+
+      // Log in with the new user credentials
+      cy.app_login({
+        username: 'cyUser2',
+        password: 'cyPassword2'
+      })
+
+      // Open blog detailed view
+      cy.get('.view-blog-details-button').click()
+
+      // Check if 'remove' button is not shown
+      cy.get('.remove-blog-button').should('not.exist')
     })
   })
 })
