@@ -9,15 +9,15 @@ const LoginForm = ({
     <div>
       <form onSubmit={submitEventHandler}>
         <div>
-          username <input
+          username <input id="username-input"
             onChange={({ target }) => usernameChangeHandler(target.value)} />
         </div>
         <div>
-          password <input type="password"
+          password <input id="password-input" type="password"
             onChange={({ target }) => passwordChangeHandler(target.value)} />
         </div>
         <div>
-          <button type="submit">login</button>
+          <button id="login-button" type="submit">login</button>
         </div>
       </form>
     </div>

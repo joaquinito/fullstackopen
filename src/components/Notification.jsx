@@ -29,7 +29,7 @@ const Notification = ({ message }) => {
     return <div style={infoNotification}>{message.text}</div>
   }
   else if (message.type === 'error') {
-    return <div style={errorNotification}>{message.text}</div>
+    return <div className='error' style={errorNotification}>{message.text}</div>
   }
 }
 
