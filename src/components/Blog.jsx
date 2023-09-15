@@ -30,7 +30,8 @@ const Blog = ({
       <div>
         <div>
           {blogData.title}, by {blogData.author} &nbsp;
-          <button onClick={() => setdetailedView(!detailedView)}>
+          <button className="view-blog-details-button"
+            onClick={() => setdetailedView(!detailedView)}>
             {detailedView ? 'hide' : 'view'}</button>
         </div>
         {detailedView ?
@@ -38,7 +39,8 @@ const Blog = ({
             <p><a href={'//' + blogData.url} target="_blank" rel="noreferrer">
               {blogData.url}</a></p>
             <p>likes {blogData.likes}
-              <button onClick={incrementLikes}>like</button></p>
+              <button className="like-blog-button"
+                onClick={incrementLikes}>like</button></p>
             <p>{blogData.user.name}</p>
             {JSON.parse(window.localStorage.getItem('loggedInAppUser')).username ===
               blogData.user.username ?

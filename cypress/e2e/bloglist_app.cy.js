@@ -6,14 +6,8 @@
 
 describe('Bloglist app', function () {
   beforeEach(function () {
-    cy.request('POST', 'http://localhost:3003/api/testing/reset')
-    const user = {
-      name: 'Cypress User',
-      username: 'cyUser',
-      password: 'cyPassword'
-    }
-    cy.request('POST', 'http://localhost:3003/api/users/', user)
-    cy.visit('http://localhost:5173')
+    cy.clean_db()
+    cy.add_user_to_db({ username: 'cyUser', name: 'Cypress User', password: 'cyPassword' })
   })
 
   it('Login form is shown', function () {
@@ -55,9 +49,7 @@ describe('Bloglist app', function () {
   describe('When logged in', function () {
     beforeEach(function () {
       // log in user
-      cy.get('#username-input').type('cyUser')
-      cy.get('#password-input').type('cyPassword')
-      cy.get('#login-button').click()
+      cy.app_login({ username: 'cyUser', password: 'cyPassword' })
     })
 
     it('A blog can be created', function () {
@@ -72,6 +64,25 @@ describe('Bloglist app', function () {
       // Check if blog is shown
       cy.get('.infoNotification').contains('Blog \'Cypress blog\' by Cypress added')
       cy.contains('Cypress blog, by Cypress')
+    })
+
+    it('A blog can be liked', function () {
+
+      // Add a blog to the database (using the backend API)
+      cy.add_blog_to_db({
+        title: 'Cypress blog',
+        author: 'Cypress',
+        url: 'https://www.cypress.io/'
+      })
+
+      // Open blog detailed view
+      cy.get('.view-blog-details-button').click()
+
+      // Click 'like' button
+      cy.get('.like-blog-button').click()
+
+      // Check if blog's number of likes has increased to 1
+      cy.contains('likes 1')
     })
   })
 })
