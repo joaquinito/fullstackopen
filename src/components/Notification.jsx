@@ -26,10 +26,10 @@ const Notification = ({ message }) => {
     return null
   }
   else if (message.type === 'info') {
-    return <div style={infoNotification}>{message.text}</div>
+    return <div className="infoNotification" style={infoNotification}>{message.text}</div>
   }
   else if (message.type === 'error') {
-    return <div className='error' style={errorNotification}>{message.text}</div>
+    return <div className='errorNotification' style={errorNotification}>{message.text}</div>
   }
 }
 

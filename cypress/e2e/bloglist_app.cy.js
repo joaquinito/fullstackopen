@@ -48,7 +48,30 @@ describe('Bloglist app', function () {
       cy.get('#login-button').click()
 
       // Check if error message is shown
-      cy.get('.error').contains('Wrong credentials')
+      cy.get('.errorNotification').contains('Wrong credentials')
+    })
+  })
+
+  describe('When logged in', function () {
+    beforeEach(function () {
+      // log in user
+      cy.get('#username-input').type('cyUser')
+      cy.get('#password-input').type('cyPassword')
+      cy.get('#login-button').click()
+    })
+
+    it('A blog can be created', function () {
+
+      // Open new blog form, fill in details, click 'create' button
+      cy.contains('new blog').click()
+      cy.get('#title-input').type('Cypress blog')
+      cy.get('#author-input').type('Cypress')
+      cy.get('#url-input').type('https://www.cypress.io/')
+      cy.get('#create-blog-button').click()
+
+      // Check if blog is shown
+      cy.get('.infoNotification').contains('Blog \'Cypress blog\' by Cypress added')
+      cy.contains('Cypress blog, by Cypress')
     })
   })
 })
