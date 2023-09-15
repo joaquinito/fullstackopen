@@ -30,14 +30,14 @@ Parameters:
   author: author of the blog to add
   url: url of the blog to add
 */
-Cypress.Commands.add('add_blog_to_db', ({ title, author, url }) => {
+Cypress.Commands.add('add_blog_to_db', ({ title, author, url, likes }) => {
   const loggedInUser = JSON.parse(localStorage.getItem('loggedInAppUser'))
   cy.request(
     {
       method: 'POST',
       url: BACKEND_BASE_URL + 'blogs',
       headers: { 'Authorization': `Bearer ${loggedInUser.token}` },
-      body: { title, author, url },
+      body: { title, author, url, likes },
     }
   ).then(() => {
     cy.visit(FRONTEND_BASE_URL)

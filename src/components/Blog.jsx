@@ -26,7 +26,7 @@ const Blog = ({
   }
 
   return (
-    <div style={componentStyle} key={blogData.title}>
+    <div className="blog" style={componentStyle} key={blogData.title}>
       <div>
         <div>
           {blogData.title}, by {blogData.author} &nbsp;

@@ -1,4 +1,5 @@
 describe('Bloglist app', function () {
+
   beforeEach(function () {
     cy.clean_db()
     cy.add_user_to_db({
@@ -8,14 +9,17 @@ describe('Bloglist app', function () {
     })
   })
 
-  it('Login form is shown', function () {
-    cy.contains('log in to application')
-    cy.contains('username')
-    cy.contains('password')
+  describe('Initial page', function () {
+
+    it('Login form is shown', function () {
+      cy.contains('log in to application')
+      cy.contains('username')
+      cy.contains('password')
+    })
   })
 
   describe('Login', function () {
-    it('succeeds with correct credentials', function () {
+    it('Login succeeds with correct credentials', function () {
 
       // Check if login form is shown
       cy.contains('log in to application')
@@ -29,7 +33,7 @@ describe('Bloglist app', function () {
       cy.contains('blogs')
     })
 
-    it('fails with wrong credentials', function () {
+    it('Login fails with wrong credentials', function () {
 
       // Check if login form is shown
       cy.contains('log in to application')
@@ -56,7 +60,7 @@ describe('Bloglist app', function () {
       cy.contains('new blog').click()
       cy.get('#title-input').type('Cypress blog')
       cy.get('#author-input').type('Cypress')
-      cy.get('#url-input').type('https://www.cypress.io/')
+      cy.get('#url-input').type('https://www.cypress.io/blog/')
       cy.get('#create-blog-button').click()
 
       // Check if blog is shown
@@ -70,7 +74,7 @@ describe('Bloglist app', function () {
       cy.add_blog_to_db({
         title: 'Cypress blog',
         author: 'Cypress',
-        url: 'https://www.cypress.io/'
+        url: 'https://www.cypress.io/blog/'
       })
 
       // Open blog detailed view
@@ -89,7 +93,7 @@ describe('Bloglist app', function () {
       cy.add_blog_to_db({
         title: 'Cypress blog',
         author: 'Cypress',
-        url: 'https://www.cypress.io/'
+        url: 'https://www.cypress.io/blog/'
       })
 
       // Open blog detailed view
@@ -108,7 +112,7 @@ describe('Bloglist app', function () {
       cy.add_blog_to_db({
         title: 'Cypress blog',
         author: 'Cypress',
-        url: 'https://www.cypress.io/'
+        url: 'https://www.cypress.io/blog/'
       })
 
       // Log out user
@@ -132,6 +136,70 @@ describe('Bloglist app', function () {
 
       // Check if 'remove' button is not shown
       cy.get('.remove-blog-button').should('not.exist')
+    })
+  })
+
+  describe('When multiple blogs exist', function () {
+
+    beforeEach(function () {
+      // log in user
+      cy.app_login({ username: 'cyUser', password: 'cyPassword' })
+
+      // Add a blogs to the database (using the backend API)
+      cy.add_blog_to_db({
+        title: 'Cypress blog',
+        author: 'Cypress',
+        url: 'https://www.cypress.io/blog/',
+        likes: 1
+      })
+      cy.add_blog_to_db({
+        title: 'React blog',
+        author: 'React',
+        url: 'https://react.dev/blog',
+        likes: 4
+      })
+      cy.add_blog_to_db({
+        title: 'MongoDB blog',
+        author: 'MongoDB',
+        url: 'https://www.mongodb.com/blog',
+        likes: 2
+      })
+    })
+
+    it('Blogs are ordered according to the number of likes', function () {
+
+      // Check if blogs are shown in the correct order
+      cy.get('.blog').eq(0).contains('React blog, by React')
+      cy.get('.blog').eq(1).contains('MongoDB blog, by MongoDB')
+      cy.get('.blog').eq(2).contains('Cypress blog, by Cypress')
+    })
+
+    it('Order of the blogs changes if one of the blogs gets more likes', function () {
+
+      // Open blog detailed view
+      cy.get('.view-blog-details-button').eq(2).click()
+
+      // Click 'like' button two times, confirming that the number of likes is updated
+      cy.get('.like-blog-button').click()
+      cy.contains('likes 2').should('exist')
+      cy.get('.like-blog-button').click()
+      cy.contains('likes 3').should('exist')
+
+      // Check if blogs are shown in the correct order (Cypress blog should be second)
+      cy.get('.blog').eq(0).contains('React blog, by React')
+      cy.get('.blog').eq(1).contains('Cypress blog, by Cypress')
+      cy.get('.blog').eq(2).contains('MongoDB blog, by MongoDB')
+
+      // Click 'like' button two times, confirming that the number of likes is updated
+      cy.get('.like-blog-button').click()
+      cy.contains('likes 4').should('exist')
+      cy.get('.like-blog-button').click()
+      cy.contains('likes 5').should('exist')
+
+      // Check if blogs are shown in the correct order (Cypress blog should be first)
+      cy.get('.blog').eq(0).contains('Cypress blog, by Cypress')
+      cy.get('.blog').eq(1).contains('React blog, by React')
+      cy.get('.blog').eq(2).contains('MongoDB blog, by MongoDB')
     })
   })
 })
