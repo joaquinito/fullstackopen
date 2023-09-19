@@ -27,12 +27,22 @@ export const addVote = (selectedId) => {
   }
 }
 
+// Action creator for the 'ADD_ANECDOTE' action
+export const addAnecdote = (content) => {
+  return {
+    type: 'ADD_ANECDOTE',
+    payload: { content }
+  }
+}
+
+
 const reducer = (state = initialState, action) => {
   console.log('state now: ', state)
   console.log('action', action)
 
-  // Action 'VOTE' will increment the vote counter of the anecdote with the given id by 1
   switch (action.type) {
+
+    // Action 'VOTE' will increment the vote counter of the anecdote with the given id by 1
     case 'VOTE': {
       const anecdote = state.find(n => n.id === action.payload.id)
       const changedAnecdote = {
@@ -40,6 +50,17 @@ const reducer = (state = initialState, action) => {
         votes: anecdote.votes + 1
       }
       return state.map(anecdote => anecdote.id !== action.payload.id ? anecdote : changedAnecdote)
+    }
+
+    // Action 'ADD_ANECDOTE' will add a new anecdote with the given content
+    case 'ADD_ANECDOTE': {
+      const newAnecdote = {
+        content: action.payload.content,
+        id: getId(),
+        votes: 0
+      }
+      console.log('newAnecdote', newAnecdote)
+      return state.concat(newAnecdote)
     }
   }
 
