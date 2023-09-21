@@ -9,13 +9,13 @@ const AnecdoteList = () => {
   const anecdotes = useSelector(state => {
 
     console.log('state', state)
-    
+
     if (filter === '' || filter === undefined) {
-      
       return state.anecdotes
     }
-    else{
-     return state.anecdotes.filter(anecdote => anecdote.content.toLowerCase().includes(filter.toLowerCase()))
+    else {
+      return state.anecdotes.filter(anecdote =>
+        anecdote.content.toLowerCase().includes(filter.toLowerCase()))
     }
   })
 
