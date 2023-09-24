@@ -40,8 +40,16 @@ for the anecdotes is completely separated from the React components.
 export const initializeAnecdotes = () => {
   return async dispatch => {
     const anecdotes = await anecdoteService.getAll()
-    console.log('anecdotes', anecdotes)
     dispatch(setAnecdotes(anecdotes))
+  }
+}
+
+// Action creation function
+export const createAnecdote = (content) => {
+  return async dispatch => {
+    console.log('content', content)
+    const newAnecdote = await anecdoteService.createNew(content)
+    dispatch(addAnecdote(newAnecdote))
   }
 }
 
