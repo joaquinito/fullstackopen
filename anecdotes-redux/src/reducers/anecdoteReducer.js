@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
+import anecdoteService from '../services/anecdotes'
 
 const anecdoteSlice = createSlice({
   name: 'anecdote',
@@ -29,4 +30,19 @@ const anecdoteSlice = createSlice({
 })
 
 export const { addAnecdote, addVote, setAnecdotes } = anecdoteSlice.actions
+
+/*
+Action creator function. In the inner function, meaning the asynchronous action, 
+the operation first fetches all the notes from the server and then dispatches the 
+setAnectodes action, which adds them to the store. This way, The initialization logic 
+for the anecdotes is completely separated from the React components.
+*/
+export const initializeAnecdotes = () => {
+  return async dispatch => {
+    const anecdotes = await anecdoteService.getAll()
+    console.log('anecdotes', anecdotes)
+    dispatch(setAnecdotes(anecdotes))
+  }
+}
+
 export default anecdoteSlice.reducer
