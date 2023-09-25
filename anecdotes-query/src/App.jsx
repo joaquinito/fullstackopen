@@ -41,7 +41,10 @@ const App = () => {
       ...anecdote,
       votes: anecdote.votes + 1
     })
-    notificationDispatch({ type: 'SET_NOTIFICATION', data: `You voted for '${anecdote.content}'` })
+    notificationDispatch({ 
+      type: 'SET_NOTIFICATION', 
+      data: `You voted for '${anecdote.content}'` 
+    })
     setTimeout(() => {
       notificationDispatch({ type: 'CLEAR_NOTIFICATION', data: '' })} , 5000)
   }

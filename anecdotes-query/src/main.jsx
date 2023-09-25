@@ -6,9 +6,9 @@ import { NotificationContenxtProvider } from './NotificationContext'
 const queryClient = new QueryClient()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <NotificationContenxtProvider>
-    <QueryClientProvider client={queryClient}>
+  <QueryClientProvider client={queryClient}>
+    <NotificationContenxtProvider>
       <App />
-    </QueryClientProvider>
-  </NotificationContenxtProvider >
+    </NotificationContenxtProvider >
+  </QueryClientProvider >
 )

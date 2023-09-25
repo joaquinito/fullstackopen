@@ -5,9 +5,14 @@ export const getAnecdotes = () =>
     .then(res => res.data)
 
 
-export const createAnecdote = anecdote =>
+export const createAnecdote = anecdote => {
+  if (anecdote.content.length < 5) {
+    throw new Error('Anecdote must be at least 5 characters long')
+  }
   axios.post('http://localhost:3001/anecdotes', anecdote)
     .then(res => res.data)
+  return anecdote
+}
 
 
 export const updateAnecdote = anecdote =>
