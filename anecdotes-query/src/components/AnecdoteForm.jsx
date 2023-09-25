@@ -1,9 +1,12 @@
+import { useContext } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createAnecdote } from '../requests'
+import NotificationContext from '../NotificationContext'
 
 const AnecdoteForm = () => {
 
   const queryClient = useQueryClient()
+  const [notificationText, notificationDispatch] = useContext(NotificationContext)
 
   /* In React Query, mutations are typically used to create/update/delete data or 
    perform server side effects.
@@ -23,6 +26,7 @@ const AnecdoteForm = () => {
   const addAnecdote = async (event) => {
     event.preventDefault()
     const content = event.target.anecdote.value
+    
     event.target.anecdote.value = ''
     if (content.length < 5) {
       throw new Error('Anecdote must be at least 5 characters long')
@@ -31,6 +35,10 @@ const AnecdoteForm = () => {
       content,
       votes: 0
     })
+    notificationDispatch({ type: 'SET_NOTIFICATION', data: `You added '${content}'` })
+    setTimeout(() => {
+      notificationDispatch({ type: 'CLEAR_NOTIFICATION', data: '' })
+    } , 5000)
   }
 
   return (
