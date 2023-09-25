@@ -10,7 +10,7 @@ const App = () => {
   }
 
   const anecdotesQuery = useQuery({
-    queryKey: ['anecdotes'], 
+    queryKey: ['anecdotes'],
     queryFn: getAnecdotes,
     retry: 3
   })
