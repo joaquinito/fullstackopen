@@ -3,11 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useField } from '../hooks'
 
 const CreateNew = (props) => {
-  //const [content, setContent] = useState('')
-  // const [author, setAuthor] = useState('')
-  // const [info, setInfo] = useState('')
-
-  const content = useField('text')
+  const content = useField('', 'text')
   const author = useField('text')
   const info = useField('text')
 
@@ -25,23 +21,30 @@ const CreateNew = (props) => {
     navigate('/') // Navigate back to the home page
   }
 
+  const handleReset = () => {
+    content.onReset()
+    author.onReset()
+    info.onReset()
+  }
+
   return (
     <div>
       <h2>create a new anecdote</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} onReset={handleReset}>
         <div>
           content
-          <input {...content} />
+          <input required {...content} />
         </div>
         <div>
           author
-          <input {...author}  />
+          <input required {...author} />
         </div>
         <div>
           url for more info
-          <input {...info}/>
+          <input required {...info} />
         </div>
-        <button>create</button>
+        <button type="submit">create</button>
+        <button type="reset">reset</button>
       </form>
     </div>
   )
