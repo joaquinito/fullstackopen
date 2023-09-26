@@ -1,21 +1,18 @@
-
 const Notification = ({ notification }) => {
-
   const defaultStyle = {
     marginTop: 10,
-    border: 'solid',
+    border: "solid",
     padding: 10,
-    borderWidth: 1
+    borderWidth: 1,
   }
 
   let style = {}
 
-  if (notification === '' || notification === undefined) {
+  if (notification === "" || notification === undefined) {
     style = {
-      display: 'none'
+      display: "none",
     }
-  }
-  else {
+  } else {
     style = defaultStyle
   }
 
