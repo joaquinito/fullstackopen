@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route, useMatch } from 'react-router-dom'
 import About from './components/About'
+import Anecdote from './components/Anecdote'
 import AnecdoteList from './components/AnecdoteList'
 import CreateNew from './components/CreateNew'
 import Footer from './components/Footer'
@@ -46,19 +47,29 @@ const App = () => {
     setAnecdotes(anecdotes.map(a => a.id === id ? voted : a))
   }
 
+  /* Every time the component is rendered, so practically every time the browser's URL changes,
+   the following command is executed. If the URL matches /notes/:id, the match variable will 
+   contain an object from which we can access the parameterized part of the path, the id of 
+   the note to be displayed, and we can then fetch the correct note to display.
+   */
+  const match = useMatch('/anecdotes/:id')
+  const anecdote = match
+    ? anecdotes.find(a => a.id === Number(match.params.id))
+    : null
+
   return (
-    <Router>
-      <div>
-        <h1>Software anecdotes</h1>
-        <Menu />
-        <Routes>
-          <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/create" element={<CreateNew addNew={addNew} />} />
-        </Routes>
-        <Footer />
-      </div>
-    </Router >
+    <div>
+      <h1>Software anecdotes</h1>
+      <Menu />
+      <Routes>
+        <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
+        <Route path="/anecdotes/:id" element={<Anecdote anecdote={anecdote} />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/create" element={<CreateNew addNew={addNew} />} />
+      </Routes>
+      <Footer />
+    </div>
+
   )
 }
 

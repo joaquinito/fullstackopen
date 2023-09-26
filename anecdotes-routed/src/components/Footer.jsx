@@ -1,5 +1,3 @@
-
-
 const Footer = () => {
 
   const style = {
@@ -8,7 +6,8 @@ const Footer = () => {
 
   return (
     <div style={style}>
-      Anecdote app for <a href='https://fullstackopen.com/'>Full Stack Open</a>.
+      Anecdote app for&nbsp;
+      <a href='https://fullstackopen.com/' target='_blank' rel='noreferrer'>Full Stack Open</a>.
       Created by Ricardo Joaquinito.
     </div>
   )
