@@ -1,0 +1,26 @@
+{
+  "name": "phonebook_backend",
+  "version": "0.0.1",
+  "description": "Backend for the phonebook application",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "lint": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ricardo Joaquinito",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongoose": "^7.4.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@flydotio/dockerfile": "^0.4.3",
+    "eslint": "^8.46.0",
+    "nodemon": "^3.0.1"
+  }
+}
