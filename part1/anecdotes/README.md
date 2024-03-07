@@ -1,1 +1,0 @@
-My solution for exercises 1.12 to 1.14 of the Full Stack Open course.
