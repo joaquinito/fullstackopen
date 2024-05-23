@@ -1,0 +1,23 @@
+/* 
+A TSConfig file in a directory indicates that the directory is the root of a TypeScript or 
+JavaScript project. The TSConfig file can be either a tsconfig.json or jsconfig.json, both 
+have the same set of config variables.
+
+Reference: https://www.typescriptlang.org/tsconfig/ 
+*/ 
+
+{
+  "compilerOptions": {
+    "noImplicitAny": true,                // mandatory to have types for all variables used
+    "noImplicitReturns": true,            // all code paths in a function must return a value
+    "strictNullChecks": true,             // null and undefined have their own distinct types and you’ll get a type error if you try to use them where a concrete value is expected
+    "strictPropertyInitialization": true, // an error is raised when a class property was declared but not set in the constructor
+    "strictBindCallApply": true,          // the built-in methods of functions call, bind, and apply must be invoked with correct argument for the underlying function
+    "noUnusedLocals": true,               // all local variables must be used
+    "noUnusedParameters": true,           // all function parameters must be used
+    "noImplicitThis": true,               // ‘this’ expressions cannot have an implied ‘any’ type
+    "alwaysStrict": true,                 // ensures that the files are parsed in the ECMAScript strict mode, and emits “use strict” for each source file
+    "esModuleInterop": true,              // fixes some issues with CommonJS/AMD/UMD and ES6 module interoperability
+    "declaration": true,                  // generates .d.ts files for every TypeScript or JavaScript file inside your project.
+  }
+}
